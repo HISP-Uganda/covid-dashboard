@@ -1,0 +1,23 @@
+{
+  "launch_path": "index.html",
+  "default_locale": "en",
+  "activities": {
+    "dhis": {
+      "href": ".."
+    }
+  },
+  "appType": "APP",
+  "name": "COVID-19 Dashboard",
+  "version": "1.0.0",
+  "description": "COVID-19 Dashboard",
+  "icons": {
+    "16": "logo192.png",
+    "48": "logo192.png",
+    "128": "logo192.png"
+  },
+  "developer": {
+    "name": "HISP",
+    "url": "http://dhis2.org"
+  },
+  "manifest_generated_at": "Sun May 17 2020 18:21:03 GMT+0300 (East Africa Time)"
+}
