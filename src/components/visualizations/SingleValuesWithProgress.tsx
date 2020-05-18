@@ -12,10 +12,15 @@ interface SingleValuesProps {
 export const SingleValuesWithProgress: FC<SingleValuesProps> = observer(
   ({ element }) => {
     const store = useStore();
+
     useEffect(() => {
       element.setOu([store.selectedOrgUnit]);
       element.fetchFromAnalytics();
     }, [element, store.selectedOrgUnit]);
+
+    if (element.loading) {
+      return <div>Loading...</div>;
+    }
 
     return (
       <>

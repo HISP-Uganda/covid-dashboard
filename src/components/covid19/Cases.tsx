@@ -1,27 +1,16 @@
-import React, { FC, useRef, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react";
-import { Responsive, WidthProvider } from "react-grid-layout";
 import { useStore } from "../../Context";
-import { Chart } from "../visualizations/Chart";
-import { TItem } from "../../models/Visualization";
-import { SingleValuesWithProgress } from "../visualizations/SingleValuesWithProgress";
-import { SingleValues } from "../visualizations/SingleValues";
-import { Map } from "../visualizations/Map";
 import { OrgUnitTree } from "../OrgUnitTree";
+import { Dashboard } from "../Dashboard";
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
-
-export const Cases: FC = observer(() => {
-  const refs = useRef<any>([]);
+export const Cases = observer(() => {
   const store = useStore();
-  const [data, setData] = useState<TItem[]>([]);
-  useEffect(() => {
-    store.loadUserOrgUnits();
-  }, [store]);
 
   useEffect(() => {
-    store.addTextItem(0, 0, 9, 1, <OrgUnitTree />);
-    store.addTextItem(
+    store.createDashboard();
+    store.currentDashboard.addTextItem(0, 0, 9, 1, <OrgUnitTree />);
+    store.currentDashboard.addTextItem(
       9,
       0,
       3,
@@ -29,7 +18,7 @@ export const Cases: FC = observer(() => {
       <div className="headers">Cases and Testing</div>
     );
     // targets
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       0,
       1,
       6,
@@ -42,7 +31,7 @@ export const Cases: FC = observer(() => {
       "Positivity Rate"
     );
     //middle
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       6,
       1,
       3,
@@ -64,7 +53,7 @@ export const Cases: FC = observer(() => {
       "pie"
     );
     // testing
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       9,
       1,
       3,
@@ -76,7 +65,7 @@ export const Cases: FC = observer(() => {
       "Truck Drivers"
     );
     // main graph
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       0,
       3,
       6,
@@ -92,7 +81,7 @@ export const Cases: FC = observer(() => {
       false
     );
     // Map
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       6,
       4,
       3,
@@ -107,7 +96,7 @@ export const Cases: FC = observer(() => {
       false,
       true
     );
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       9,
       3,
       3,
@@ -119,7 +108,7 @@ export const Cases: FC = observer(() => {
       "Contacts"
     );
     // Turnaround
-    store.addAnalyticsItem(
+    store.currentDashboard.addAnalyticsItem(
       9,
       5,
       3,
@@ -134,70 +123,7 @@ export const Cases: FC = observer(() => {
       true,
       false
     );
-    let data = store.visualizations;
-    refs.current = new Array(store.visualizations.length);
-    setData(data);
   }, [store]);
 
-  useEffect(() => {
-    data.map(async (v: TItem, i: number) => {
-      const h = refs.current[i].offsetHeight;
-      const w = refs.current[i].offsetWidth;
-      v.setDimension(w, h);
-      return v;
-    });
-  }, [data]);
-
-  const display = (element: TItem) => {
-    switch (element.type) {
-      case "chart":
-        if (element.chartType === "map") {
-          return <Map element={element} />;
-        }
-        return <Chart element={element} />;
-      case "plainText":
-        return element.data;
-
-      case "simpleTextValues":
-        return <SingleValues element={element} />;
-      case "textValues":
-        return <SingleValuesWithProgress element={element} />;
-    }
-  };
-
-  return (
-    <div>
-      <ResponsiveGridLayout
-        className="layout"
-        breakpoints={{
-          xxl: 3400,
-          lg: 1200,
-          md: 996,
-          sm: 768,
-          xs: 480,
-          xxs: 0,
-        }}
-        cols={{ xxl: 12, lg: 12, md: 9, sm: 1, xs: 1, xxs: 1 }}
-        rowHeight={56}
-      >
-        {store.visualizations.map((element: TItem, i: number) => (
-          <div
-            ref={(el) => (refs.current[i] = el)}
-            key={element.i}
-            style={{ background: "white" }}
-            className={element.cssClass}
-            data-grid={{
-              w: element.w,
-              h: element.h,
-              x: element.x,
-              y: element.y,
-              static: element.editable,
-            }}
-          >
-            {!store.selectedOrgUnit ? <div>Loading</div> : display(element)}
-          </div>
-        ))}
-      </ResponsiveGridLayout>
-    </div>
-  );
+  return <Dashboard />;
 });

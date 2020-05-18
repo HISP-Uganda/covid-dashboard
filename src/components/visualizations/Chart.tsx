@@ -17,5 +17,9 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
     element.fetchFromAnalytics();
   }, [element, store.selectedOrgUnit]);
 
+  if (element.loading) {
+    return <div>Loading...</div>;
+  }
+
   return <HighchartsReact highcharts={Highcharts} options={element.chart} />;
 });

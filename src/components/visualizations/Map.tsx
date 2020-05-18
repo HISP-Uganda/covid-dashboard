@@ -12,9 +12,15 @@ interface MapProps {
 }
 export const Map: FC<MapProps> = observer(({ element }) => {
   const store = useStore();
+
   useEffect(() => {
     element.fetchUnitsAndData(store.selectedOrgUnit);
   }, [store.selectedOrgUnit, element]);
+
+  if (element.loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <HighchartsReact
       highcharts={Highcharts}

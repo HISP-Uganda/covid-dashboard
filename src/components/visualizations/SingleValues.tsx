@@ -10,10 +10,16 @@ interface SingleValuesProps {
 
 export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
   const store = useStore();
+
   useEffect(() => {
     element.setOu([store.selectedOrgUnit]);
     element.fetchFromAnalytics();
   }, [element, store.selectedOrgUnit]);
+
+  if (element.loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       {Object.values(element.chart).map((value: any, i: number) => (
