@@ -49,20 +49,12 @@ const initialize = async () => {
             <Menu
               theme="dark"
               mode="horizontal"
+              defaultSelectedKeys={["1"]}
               style={{
                 background: "#000066",
               }}
             >
-              <Menu.Item
-                key="1"
-                className="modified-item"
-                style={{
-                  textAlign: "center",
-                  background: "#95CEFF",
-                  // width: 250,
-                  color: "white",
-                }}
-              >
+              <Menu.Item key="1" className="modified-item">
                 <Link to="/">COVID-19</Link>
               </Menu.Item>
             </Menu>

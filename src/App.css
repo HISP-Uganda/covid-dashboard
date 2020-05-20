@@ -16,18 +16,24 @@
   padding: 5px;
   background: #d9edf7;
 }
-.modified-item:hover {
+.modified-item {
+  text-align: center;
+  /* background: #95ceff; */
+
+  color: black;
+}
+/* .modified-item:hover {
   border-bottom: 2px solid yellow !important;
   color: inherit !important;
 }
 .modified-item:focus {
   border-bottom: 2px solid yellow !important;
   color: inherit !important;
-}
+} */
 
-:host ::ng-deep .ant-menu.ant-menu-light .ant-menu-item-selected {
+/* :host ::ng-deep .ant-menu.ant-menu-light .ant-menu-item-selected {
   border-bottom-color: #4a235a;
-}
+} */
 .red {
   color: #ff0000;
   font-size: 28px;

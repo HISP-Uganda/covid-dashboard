@@ -54,6 +54,9 @@ export const Covid19Dashboards = observer(() => {
             "RHDYZ4xOUGf",
             "mxHo22EWLKM",
             "LRbMLBbKTjd",
+            "azKjNal1oPw",
+            "H6EW1wbRcdz",
+            "JvHVmX0juJq",
           ],
           ["THIS_YEAR"],
           "chart",
@@ -157,28 +160,42 @@ export const Covid19Dashboards = observer(() => {
           1,
           6,
           2,
-          ["k8JUA8SuWmB", "nsV5cXYQS2f"],
+          ["UXmUvLgIaqW", "pxb5glV7ipX"],
           ["THIS_YEAR"],
           "textValues",
-          "-ve Cases",
-          "+ve Cases",
-          "Positivity Rate"
+          "Admissions",
+          "Cured",
+          "Rate of Cure"
         );
         //Map
-        store.currentDashboard.addTextItem(6, 1, 3, 4, <div>Map</div>);
+        store.currentDashboard.addAnalyticsItem(
+          6,
+          1,
+          3,
+          8,
+          ["UXmUvLgIaqW"],
+          ["THIS_YEAR"],
+          "chart",
+          "Admissions",
+          "This Year",
+          "Number",
+          "map",
+          false,
+          true
+        );
         // testing
-        store.currentDashboard.addTextItem(9, 1, 3, 2, <div>Left</div>);
+        // store.currentDashboard.addTextItem(9, 1, 3, 2, <div>Left</div>);
         // main graph
         store.currentDashboard.addAnalyticsItem(
           0,
           3,
           6,
-          7,
-          ["QBvAgwYmAs5"],
-          ["TODAY", "LAST_14_DAYS"],
+          8,
+          ["UXmUvLgIaqW"],
+          ["TODAY", "LAST_7_DAYS"],
           "chart",
-          "Tests Conducted",
-          "",
+          "Number of admissions",
+          "Last 7 days",
           "Number",
           "column",
           true,

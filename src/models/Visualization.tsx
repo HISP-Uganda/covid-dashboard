@@ -19,7 +19,7 @@ export class Visualization {
   @observable yAxis: string = "";
   @observable loading: boolean = false;
   @observable cssClass = "flex-center";
-  @observable editable: boolean = process.env.NODE_ENV === "development";
+  @observable editable: boolean = process.env.NODE_ENV === "production";
 
   @observable dx: string[] = [];
   @observable periods: string[] = [];
@@ -130,6 +130,9 @@ export class Visualization {
         credits: { enabled: false },
         title: {
           text: `<span style="font-size: 20px;font-weight:bolder">${this.title}</span>`,
+        },
+        subtitle: {
+          text: `<span>${this.subtitle}</span>`,
         },
       };
 
@@ -287,7 +290,7 @@ export class Visualization {
             data: realData,
             keys: ["id", "value"],
             joinBy: "id",
-            name: "Confirmed Cases",
+            name: this.title,
             states: {
               hover: {
                 color: "#a4edba",
