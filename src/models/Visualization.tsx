@@ -19,7 +19,7 @@ export class Visualization {
   @observable yAxis: string = "";
   @observable loading: boolean = false;
   @observable cssClass = "flex-center";
-  @observable editable: boolean = process.env.NODE_ENV === "production";
+  @observable editable: boolean = process.env.NODE_ENV === "development";
 
   @observable dx: string[] = [];
   @observable periods: string[] = [];
@@ -53,7 +53,9 @@ export class Visualization {
     this.h = h;
   };
   @action fetchFromAnalytics = async () => {
-    this.setLoading(true);
+    if (this.chartType !== "map") {
+      this.setLoading(true);
+    }
     if (this.dx.length > 0 && this.periods.length > 0 && this.ou.length > 0) {
       let req = new this.d2.analytics.request()
         .addDataDimension(this.dx)
@@ -73,13 +75,14 @@ export class Visualization {
       const data = await this.d2.analytics.aggregate.get(req);
       this.setData(data);
     }
-    this.setLoading(false);
+    if (this.chartType !== "map") {
+      this.setLoading(false);
+    }
   };
 
   @action fetchGeoJson = async (unit: string) => {
     if (unit) {
       const api = this.d2.Api.getApi();
-      this.setLoading(true);
       const { children } = await api.get(`organisationUnits/${unit}`, {
         fields: "children[id,name,geometry]",
       });
@@ -107,13 +110,14 @@ export class Visualization {
         features,
       };
       this.setOu(children.map((c: any) => c.id));
-      this.setLoading(false);
     }
   };
 
   @action fetchUnitsAndData = async (unit: string) => {
+    this.setLoading(true);
     await this.fetchGeoJson(unit);
     await this.fetchFromAnalytics();
+    this.setLoading(false);
   };
 
   @computed
@@ -122,7 +126,12 @@ export class Visualization {
       let xAxis = {};
       let series: any[] = [];
 
-      let fullChart = {};
+      let fullChart: any = {
+        credits: { enabled: false },
+        title: {
+          text: `<span style="font-size: 20px;font-weight:bolder">${this.title}</span>`,
+        },
+      };
 
       // let mapNavigation = {};
 
@@ -162,10 +171,8 @@ export class Visualization {
           crosshair: true,
         };
         fullChart = {
+          ...fullChart,
           chart,
-          title: {
-            text: this.title,
-          },
           plotOptions,
           tooltip,
           xAxis,
@@ -209,10 +216,8 @@ export class Visualization {
         ];
 
         fullChart = {
+          ...fullChart,
           chart,
-          title: {
-            text: this.title,
-          },
           plotOptions,
           tooltip,
           xAxis,
@@ -247,10 +252,10 @@ export class Visualization {
         };
 
         fullChart = {
+          ...fullChart,
+
           chart,
-          title: {
-            text: this.title,
-          },
+
           plotOptions,
           tooltip,
           xAxis,
@@ -296,10 +301,8 @@ export class Visualization {
         ];
 
         fullChart = {
+          ...fullChart,
           chart,
-          title: {
-            text: this.title,
-          },
           series,
           // mapNavigation,
           colorAxis,

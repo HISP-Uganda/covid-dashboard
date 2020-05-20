@@ -7,7 +7,6 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import Loading from "./components/Loading";
 import { StoreContext } from "./Context";
-
 import {
   HashRouter as Router,
   Switch,

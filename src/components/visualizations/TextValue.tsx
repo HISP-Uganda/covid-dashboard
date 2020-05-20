@@ -21,6 +21,7 @@ export const TextValue: FC<TextValueProps> = ({
         style={{
           color,
           textTransform: "uppercase",
+          fontSize: 20,
         }}
       >
         {label}

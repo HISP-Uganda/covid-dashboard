@@ -1,9 +1,12 @@
 import { TreeSelect } from "antd";
-import React from "react";
+import React, { FC } from "react";
 import { observer } from "mobx-react";
 import { useStore } from "../Context";
+interface OrgProps {
+  name: string;
+}
 
-export const OrgUnitTree = observer(() => {
+export const OrgUnitTree: FC<OrgProps> = observer(({ name }) => {
   const store = useStore();
 
   const onLoadData = async (treeNode: any) => {
@@ -12,7 +15,7 @@ export const OrgUnitTree = observer(() => {
 
   return (
     <div className="headers">
-      <div style={{ fontSize: 20, textAlign: "center" }}>EPi</div>
+      <div style={{ fontSize: 20, textAlign: "center" }}>{name}</div>
       <TreeSelect
         allowClear={true}
         treeDataSimpleMode
@@ -24,7 +27,7 @@ export const OrgUnitTree = observer(() => {
         onChange={store.setSelectedOrgUnit}
         loadData={onLoadData}
         treeData={store.organisationUnits}
-      />{" "}
+      />
     </div>
   );
 });

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { observer } from "mobx-react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { useStore } from "../Context";
@@ -7,25 +7,13 @@ import { TItem } from "../models/Visualization";
 import { SingleValuesWithProgress } from "./visualizations/SingleValuesWithProgress";
 import { SingleValues } from "./visualizations/SingleValues";
 import { Map } from "./visualizations/Map";
+import { every } from "lodash";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export const Dashboard = observer(() => {
   const refs = useRef<any>([]);
   const store = useStore();
-  const [data, setData] = useState<TItem[]>([]);
-
-  refs.current = new Array(store.currentDashboard.visualizations.length);
-
-  useEffect(() => {
-    setData(store.currentDashboard.visualizations);
-    data.map((v: TItem, i: number) => {
-      const h = refs.current[i].offsetHeight;
-      const w = refs.current[i].offsetWidth;
-      v.setDimension(w, h);
-      return v;
-    });
-  }, [data, store.currentDashboard.visualizations]);
 
   const display = (element: TItem) => {
     switch (element.type) {
@@ -44,10 +32,46 @@ export const Dashboard = observer(() => {
     }
   };
 
+  const children = useMemo(() => {
+    refs.current = new Array(store.currentDashboard.visualizations.length);
+    return store.currentDashboard.visualizations.map(
+      (element: TItem, i: number) => (
+        <div
+          ref={(el) => (refs.current[i] = el)}
+          key={element.i}
+          style={{ background: "white" }}
+          className={element.cssClass}
+          data-grid={{
+            w: element.w,
+            h: element.h,
+            x: element.x,
+            y: element.y,
+            static: element.editable,
+          }}
+        >
+          {display(element)}
+        </div>
+      )
+    );
+  }, [store.currentDashboard.visualizations]);
+
+  useEffect(() => {
+    if (every(refs, Boolean)) {
+      store.currentDashboard.visualizations.map((v: TItem, i: number) => {
+        const h = refs.current[i].offsetHeight;
+        const w = refs.current[i].offsetWidth;
+        v.setDimension(w, h);
+        return v;
+      });
+    }
+  }, [store.currentDashboard.visualizations]);
+
   return (
     <div>
       <ResponsiveGridLayout
         className="layout"
+        containerPadding={[5, 0]}
+        margin={[5, 5]}
         breakpoints={{
           xxl: 3400,
           lg: 1200,
@@ -59,25 +83,7 @@ export const Dashboard = observer(() => {
         cols={{ xxl: 12, lg: 12, md: 9, sm: 1, xs: 1, xxs: 1 }}
         rowHeight={56}
       >
-        {store.currentDashboard.visualizations.map(
-          (element: TItem, i: number) => (
-            <div
-              ref={(el) => (refs.current[i] = el)}
-              key={element.i}
-              style={{ background: "white" }}
-              className={element.cssClass}
-              data-grid={{
-                w: element.w,
-                h: element.h,
-                x: element.x,
-                y: element.y,
-                static: element.editable,
-              }}
-            >
-              {!store.selectedOrgUnit ? <div>Loading</div> : display(element)}
-            </div>
-          )
-        )}
+        {children}
       </ResponsiveGridLayout>
     </div>
   );

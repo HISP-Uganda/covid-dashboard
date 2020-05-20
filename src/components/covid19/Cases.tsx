@@ -3,19 +3,26 @@ import { observer } from "mobx-react";
 import { useStore } from "../../Context";
 import { OrgUnitTree } from "../OrgUnitTree";
 import { Dashboard } from "../Dashboard";
+import { LeftHeader } from "../visualizations/LeftHeader";
 
 export const Cases = observer(() => {
   const store = useStore();
 
   useEffect(() => {
     store.createDashboard();
-    store.currentDashboard.addTextItem(0, 0, 9, 1, <OrgUnitTree />);
+    store.currentDashboard.addTextItem(
+      0,
+      0,
+      9,
+      1,
+      <OrgUnitTree name="CASES AND EPI" />
+    );
     store.currentDashboard.addTextItem(
       9,
       0,
       3,
       1,
-      <div className="headers">Cases and Testing</div>
+      <LeftHeader value="Cases and Testing" />
     );
     // targets
     store.currentDashboard.addAnalyticsItem(

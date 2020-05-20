@@ -1,5 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react";
+import { useStore } from "../../Context";
+import { OrgUnitTree } from "../OrgUnitTree";
+import { Dashboard } from "../Dashboard";
+
 export const Treatment = observer(() => {
-  return <div>Treatment Coming soon</div>;
+  const store = useStore();
+
+  useEffect(() => {}, [store]);
+
+  return <Dashboard />;
 });
