@@ -2,10 +2,10 @@ import React, { FC } from "react";
 
 interface TextValueProps {
   color: string;
-  label: string;
+  label?: string;
   value: string;
   className: string;
-  width: string;
+  width?: string;
 }
 
 export const TextValue: FC<TextValueProps> = ({
@@ -16,14 +16,8 @@ export const TextValue: FC<TextValueProps> = ({
   width,
 }) => {
   return (
-    <div className="container" style={{ width }}>
-      <div
-        style={{
-          color,
-          textTransform: "uppercase",
-          fontSize: 20,
-        }}
-      >
+    <div className="container">
+      <div>
         {label}
       </div>
       <div className={className}>{String(value)}</div>

@@ -21,5 +21,5 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
     return <div>Loading...</div>;
   }
 
-  return <HighchartsReact highcharts={Highcharts} options={element.chart} />;
+  return  <HighchartsReact highcharts={Highcharts} options={element.chart} />;
 });

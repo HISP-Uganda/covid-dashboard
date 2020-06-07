@@ -16,125 +16,60 @@ export const Covid19Dashboards = observer(() => {
         store.currentDashboard.addTextItem(
           0,
           0,
-          9,
-          1,
-          <OrgUnitTree name="CASES AND EPI" />
+          3,
+          2,
+          <p>Testes</p>
+        );
+        store.currentDashboard.addTextItem(
+          3,
+          0,
+          6,
+          2,
+          <p>Testes</p>
         );
         store.currentDashboard.addTextItem(
           9,
           0,
           3,
-          1,
-          <LeftHeader value="Cases and Testing" />
+          2,
+          <p>Testes</p>
         );
-        // targets
+
         store.currentDashboard.addAnalyticsItem(
           0,
-          1,
-          6,
           2,
-          ["k8JUA8SuWmB", "nsV5cXYQS2f"],
-          ["THIS_YEAR"],
-          "textValues",
-          "-ve Cases",
-          "+ve Cases",
-          "Positivity Rate"
-        );
-        //middle
-        store.currentDashboard.addAnalyticsItem(
-          6,
-          1,
-          3,
           4,
-          [
-            "tpBtRe2DJ3B",
-            "X1BUw8HyoMg",
-            "XWI8darutqF",
-            "xJg5M7bfjU4",
-            "RHDYZ4xOUGf",
-            "mxHo22EWLKM",
-            "LRbMLBbKTjd",
-            "azKjNal1oPw",
-            "H6EW1wbRcdz",
-            "JvHVmX0juJq",
-          ],
-          ["THIS_YEAR"],
-          "chart",
-          "Cases by Country",
-          "",
-          "Number",
-          "pie"
-        );
-        // testing
-        store.currentDashboard.addAnalyticsItem(
-          9,
-          1,
-          3,
-          2,
-          ["ouVIFKQcWKu", "a2ww5jcUoA4"],
-          ["THIS_YEAR"],
-          "simpleTextValues",
-          "Community",
-          "Truck Drivers"
-        );
-        // main graph
-        store.currentDashboard.addAnalyticsItem(
-          0,
-          3,
           6,
-          8,
-          ["QBvAgwYmAs5"],
-          ["TODAY", "LAST_14_DAYS"],
+          ["UXmUvLgIaqW"],
+          ["TODAY", "LAST_7_DAYS"],
           "chart",
-          "Tests Conducted",
-          "",
+          "Number of admissions",
+          "Last 7 days",
           "Number",
           "column",
           true,
           false
         );
-        // Map
-        store.currentDashboard.addAnalyticsItem(
-          6,
-          5,
-          3,
-          6,
-          ["nsV5cXYQS2f"],
-          ["THIS_YEAR"],
-          "chart",
-          "Confirmed Cases",
-          "",
-          "Number",
-          "map",
-          false,
-          true
-        );
-        store.currentDashboard.addAnalyticsItem(
-          9,
-          3,
-          3,
+        store.currentDashboard.addTextItem(
+          4,
           2,
-          ["tIku9fFSXmh", "rxFoiosmSKO"],
-          ["THIS_YEAR"],
-          "simpleTextValues",
-          "Quarantine",
-          "Contacts"
-        );
-        // Turnaround
-        store.currentDashboard.addAnalyticsItem(
-          9,
           5,
-          3,
           6,
-          ["SdF0bwlt4p6"],
-          ["TODAY", "LAST_14_DAYS"],
-          "chart",
-          "Turnaround Time",
-          "",
-          "Number",
-          "line",
-          true,
-          false
+          <p>Testes</p>
+        );
+        store.currentDashboard.addTextItem(
+          9,
+          2,
+          3,
+          12,
+          <p>Testes</p>
+        );
+        store.currentDashboard.addTextItem(
+          0,
+          8,
+          9,
+          6,
+          <p>Testes</p>
         );
         break;
 

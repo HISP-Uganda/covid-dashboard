@@ -1,9 +1,10 @@
 import { observable, action, computed } from "mobx";
 import { generateUid } from "../utils/uid";
+import { fromPairs, flatten } from 'lodash'
 
 export class Visualization {
-  @observable height: number = 200;
-  @observable width: number = 300;
+  @observable height: number = 0;
+  @observable width: number = 0;
   @observable x: number = 0;
   @observable y: number = 0;
   @observable w: number = 1;
@@ -18,18 +19,19 @@ export class Visualization {
   @observable xAxis: string = "";
   @observable yAxis: string = "";
   @observable loading: boolean = false;
-  @observable cssClass = "flex-center";
+  @observable cssClass = "";
   @observable editable: boolean = process.env.NODE_ENV === "production";
 
-  @observable dx: string[] = [];
+  @observable dx: any = [];
   @observable periods: string[] = [];
   @observable ou: string[] = [];
   @observable filterByOus: boolean = true;
   @observable filterByPeriods: boolean = true;
   @observable geoJson: any;
+  @observable metadata: any = {}
 
   @action setLoading = (val: boolean) => (this.loading = val);
-  @action setDx = (dx: string[]) => (this.dx = dx);
+  @action setDx = (dx: any[]) => (this.dx = dx);
   @action setOu = (ou: string[]) => (this.ou = ou);
   @action setPeriods = (periods: string[]) => (this.periods = periods);
   @action setFilterByOus = (val: boolean) => (this.filterByOus = val);
@@ -42,6 +44,7 @@ export class Visualization {
   @action setXAxis = (val: string) => (this.xAxis = val);
   @action setD2 = (val: any) => (this.d2 = val);
   @action setCssClass = (val: any) => (this.cssClass = val);
+  @action setMetadata = (val: any) => (this.metadata = val);
   @action setDimension = (width: number, height: number) => {
     this.width = width;
     this.height = height;
@@ -57,8 +60,12 @@ export class Visualization {
       this.setLoading(true);
     }
     if (this.dx.length > 0 && this.periods.length > 0 && this.ou.length > 0) {
+      const realDimensions = this.dx.map((d: any) => {
+        const child = d.child ? [d.child.dx] : [];
+        return [d.dx, ...child]
+      })
       let req = new this.d2.analytics.request()
-        .addDataDimension(this.dx)
+        .addDataDimension(flatten(realDimensions))
         .withAggregationType("SUM")
         .withSkipRounding(true);
 
@@ -136,7 +143,6 @@ export class Visualization {
         },
       };
 
-      // let mapNavigation = {};
 
       let colorAxis = {};
       let chart: any = {
@@ -154,10 +160,10 @@ export class Visualization {
             return this.data.metaData.items[p].name;
           });
 
-          series = this.dx.map((d: string) => {
+          series = this.dx.map((d: any) => {
             const data = this.data.metaData.dimensions.pe.map((p: string) => {
               const dy = this.data.rows.find((r: any[]) => {
-                return d === r[0] && p === r[1];
+                return d.dx === r[0] && p === r[1];
               });
               if (dy) {
                 return Number(dy[2]);
@@ -165,7 +171,7 @@ export class Visualization {
                 return 0;
               }
             });
-            return { name: this.data.metaData.items[d].name, data };
+            return { name: this.data.metaData.items[d.dx].name, data };
           });
         }
 
@@ -234,10 +240,10 @@ export class Visualization {
             return this.data.metaData.items[p].name;
           });
 
-          series = this.dx.map((d: string) => {
+          series = this.dx.map((d: any) => {
             const data = this.data.metaData.dimensions.pe.map((p: string) => {
               const dy = this.data.rows.find((r: any[]) => {
-                return d === r[0] && p === r[1];
+                return d.dx === r[0] && p === r[1];
               });
               if (dy) {
                 return Number(dy[2]);
@@ -245,7 +251,7 @@ export class Visualization {
                 return 0;
               }
             });
-            return { name: this.data.metaData.items[d].name, data };
+            return { name: this.data.metaData.items[d.dx].name, data };
           });
         }
 
@@ -269,13 +275,6 @@ export class Visualization {
           ...chart,
           map: this.geoJson,
         };
-
-        // mapNavigation = {
-        //   enabled: true,
-        //   buttonOptions: {
-        //     verticalAlign: "bottom",
-        //   },
-        // };
 
         colorAxis = {
           tickPixelInterval: 100,
@@ -307,76 +306,41 @@ export class Visualization {
           ...fullChart,
           chart,
           series,
-          // mapNavigation,
           colorAxis,
         };
       }
       return fullChart;
     } else if (this.type === "textValues") {
-      let num = 0;
-      let den = 0;
-      if (this.data && this.data.rows.length > 0 && this.dx.length > 0) {
-        const searchedNum = this.data.rows.find((row: any) => {
-          return row[0] === this.dx[0];
-        });
-        const searchedDen = this.data.rows.find((row: any) => {
-          return row[0] === this.dx[1];
-        });
+      if (this.data && this.dx.length > 0) {
+        const dxes = this.dx.map((d: any, i: number) => {
+          const searchedNum = this.data.rows.find((row: any) => {
+            return row[0] === d.dx;
+          });
 
-        if (searchedNum) {
-          num = searchedNum[1];
-        }
+          let child: any = null;
 
-        if (searchedDen) {
-          den = searchedDen[1];
-        }
+          if (d.child) {
+            const childValue = this.data.rows.find((row: any) => {
+              return row[0] === d.child.dx;
+            });
+
+            child = {
+              label: d.child.label,
+              value: childValue ? childValue[1] : '0',
+              chart: d.child.chart
+            }
+          }
+
+          return [d.dx, {
+            label: d.label,
+            dx: d.dx,
+            value: searchedNum ? Number(searchedNum[1]).toLocaleString() : '0',
+            chart: d.chart,
+            child
+          }]
+        });
+        return fromPairs(dxes);
       }
-      return {
-        numerator: {
-          title: this.title,
-          value: Number(num).toLocaleString(),
-        },
-        denominator: {
-          title: this.subtitle,
-          value: Number(den).toLocaleString(),
-        },
-        rate: {
-          title: this.xAxis,
-          value: ((den / num) * 100).toLocaleString(),
-        },
-      };
-    } else if (this.type === "simpleTextValues") {
-      let num = 0;
-      let den = 0;
-
-      if (this.data && this.data.rows.length > 0 && this.dx.length > 0) {
-        const searchedNum = this.data.rows.find((row: any) => {
-          return row[0] === this.dx[0];
-        });
-        const searchedDen = this.data.rows.find((row: any) => {
-          return row[0] === this.dx[1];
-        });
-
-        if (searchedNum) {
-          num = searchedNum[1];
-        }
-
-        if (searchedDen) {
-          den = searchedDen[1];
-        }
-      }
-      return {
-        numerator: {
-          title: this.title,
-          value: Number(num).toLocaleString(),
-          width: "50%",
-        },
-        denominator: {
-          title: this.subtitle,
-          value: Number(den).toLocaleString(),
-          width: "50%",
-        },
-      };
     }
     return this.data;
   }
