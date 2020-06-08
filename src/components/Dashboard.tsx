@@ -1,17 +1,29 @@
-import { Card } from "antd";
+import { Select } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
+import useDimensions from "react-use-dimensions";
 import { useStore } from "../Context";
-import { Visualization, TItem } from "../models/Visualization";
+import { TItem, Visualization } from "../models/Visualization";
 import { Chart } from "./visualizations/Chart";
 import { Map } from "./visualizations/Map";
 import { SingleValues } from "./visualizations/SingleValues";
 
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
+const { Option } = Select;
+
 
 export const Dashboard = observer(() => {
   const store = useStore();
+  const [c1, d1] = useDimensions({ liveMeasure: false });
+  const [c2, d2] = useDimensions({ liveMeasure: false });
+  const [c3, d3] = useDimensions({ liveMeasure: false });
+  const [c4, d4] = useDimensions({ liveMeasure: false });
+
+  const [c11, d11] = useDimensions({ liveMeasure: false });
+  const [c22, d22] = useDimensions({ liveMeasure: false });
+  const [c33, d33] = useDimensions({ liveMeasure: false });
 
   const display = (element: TItem) => {
     switch (element.type) {
@@ -33,9 +45,9 @@ export const Dashboard = observer(() => {
   beds.setD2(store.d2);
   beds.setDx([
     { dx: 'C3a2t1kIppc', label: 'Bed Capacity' },
-    { dx: 'rw0BHHe8S29', label: 'Beds Available' },
-    { dx: 'oK76O9uCtEe', label: 'Admissions' },
-    { dx: 'v9r6qu7MAvk', chart: 'circle' }
+    { dx: 'rw0BHHe8S29', label: 'Beds Available', className: 'red' },
+    { dx: 'oK76O9uCtEe', label: 'Admissions', className: 'red' },
+    { dx: 'v9r6qu7MAvk', chart: 'circle', showInfo: true, strokeWidth: 5 }
   ]);
   beds.setPeriods(['THIS_YEAR']);
   beds.setFilterByOus(true);
@@ -48,7 +60,7 @@ export const Dashboard = observer(() => {
   testingAndContactTracing.setDx([
     { dx: 'BM25rsG76xg', label: 'Total Tests Done' },
     {
-      dx: 'wAOwXzZwZhs', label: 'Tested Positive', child: {
+      dx: 'wAOwXzZwZhs', className: 'red', label: 'Tested Positive', child: {
         dx: 'DhGtpi9ehqp',
         chart: 'line'
       }
@@ -61,7 +73,7 @@ export const Dashboard = observer(() => {
       }
     },
     {
-      dx: 'z1cgvbudBq6', label: 'Positive Contacts', child: {
+      dx: 'z1cgvbudBq6', className: 'red', label: 'Positive Contacts', child: {
         dx: 'upO9ps9ItXy',
         chart: 'line'
       }
@@ -95,7 +107,7 @@ export const Dashboard = observer(() => {
   incidence.setFilterByPeriods(false);
   incidence.setType('chart');
   incidence.setChartType('line');
-
+  incidence.setDimension(d1.width - 120, d1.height - 50);
 
   const dailyInfection = new Visualization();
   dailyInfection.setD2(store.d2);
@@ -107,6 +119,7 @@ export const Dashboard = observer(() => {
   dailyInfection.setFilterByPeriods(false);
   dailyInfection.setType('chart');
   dailyInfection.setChartType('column');
+  dailyInfection.setDimension(d2.width - 200, d2.height - 50)
 
   const deaths = new Visualization();
   deaths.setD2(store.d2);
@@ -133,7 +146,7 @@ export const Dashboard = observer(() => {
       }
     },
     {
-      dx: 'Etwx5Yv3jBp', label: 'Positive Health Workers', child: {
+      dx: 'Etwx5Yv3jBp', className: 'red', label: 'Positive Health Workers', child: {
         dx: 'kLUxutfrUjZ',
         chart: 'line'
       }
@@ -166,13 +179,25 @@ export const Dashboard = observer(() => {
   positiveAtPOE.setFilterByPeriods(false);
   positiveAtPOE.setType('chart');
   positiveAtPOE.setChartType('column');
+  positiveAtPOE.setDimension(d3.width, d3.height - 500);
 
+  const testingCapacity = new Visualization();
+  testingCapacity.setD2(store.d2);
+  testingCapacity.setDx([
+    { dx: 'Etwx5Yv3jBp', label: 'POEs Available' },
+  ]);
+  testingCapacity.setPeriods(['LAST_14_DAYS']);
+  testingCapacity.setFilterByOus(true);
+  testingCapacity.setFilterByPeriods(false);
+  testingCapacity.setType('chart');
+  testingCapacity.setChartType('column');
+  testingCapacity.setDimension(d4.width - 210, d4.height - 50)
 
   return (
     <div>
       <ResponsiveGridLayout
         className="layout"
-        containerPadding={[5, 0]}
+        containerPadding={[5, 5]}
         margin={[5, 5]}
         breakpoints={{
           xxl: 3400,
@@ -185,14 +210,10 @@ export const Dashboard = observer(() => {
         cols={{ xxl: 12, lg: 12, md: 9, sm: 1, xs: 1, xxs: 1 }}
         rowHeight={66}
       >
-        <Card
-          size="small"
-          style={{ background: '#F4F4F4', height: '100%' }}
-          bordered={false}
-          bodyStyle={{ padding: 0, margin: 0, display: 'flex', justifyContent: 'space-around' }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
+        <div
+          style={{ display: 'flex', flexDirection: 'column', background: '#F4F4F4' }}
           key="1"
+          ref={c11}
           data-grid={{
             w: 3,
             h: 2,
@@ -201,16 +222,22 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          {display(beds)}
-        </Card>
-        <Card
-          size="small"
-          bordered={false}
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
+            <Select defaultValue="jack" style={{ width: 170, marginLeft: 'auto' }} bordered={false}>
+              <Option value="jack">All Treatment Centers</Option>
+              <Option value="lucy">Lucy</Option>
+              <Option value="Yiminghe">yiminghe</Option>
+            </Select>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", height: d11.height ? d11.height - 38 : 30 }}>
+            {display(beds)}
+          </div>
+        </div>
+        <div
           style={{ background: '#F4F4F4', height: '100%' }}
-          bodyStyle={{ padding: 0, margin: 0, display: 'flex', justifyContent: 'space-around' }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
           key="2"
+          ref={c22}
           data-grid={{
             w: 6,
             h: 2,
@@ -219,16 +246,17 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          {display(testingAndContactTracing)}
-        </Card>
-        <Card
-          size="small"
-          style={{ background: '#F4F4F4', height: '100%' }}
-          bordered={false}
-          bodyStyle={{ padding: 0, margin: 0, display: 'flex', justifyContent: 'space-around' }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Testing and Contact Tracing</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30 }}>
+            {display(testingAndContactTracing)}
+          </div>
+        </div>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', background: '#F4F4F4' }}
           key="3"
+          ref={c33}
           data-grid={{
             w: 3,
             h: 2,
@@ -237,17 +265,19 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          {display(poes)}
-        </Card>
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Point of Entries(POEs)</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", height: d33.height ? d33.height - 38 : 30 }}>
+            {display(poes)}
+          </div>
+          {/* */}
+        </div>
 
-        <Card
-          size="small"
-          style={{ background: '#F4F4F4', height: '100%' }}
-          bordered={false}
-          bodyStyle={{ padding: 0, margin: 0, display: 'flex' }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
+        <div
           key="4"
+          ref={c1}
+          style={{ display: 'flex', flexDirection: 'column', background: '#F4F4F4' }}
           data-grid={{
             w: 4,
             h: 5,
@@ -256,19 +286,20 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          <div style={{ width: '80%' }}>
-            {display(incidence)}
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Case Incidence</span>
           </div>
-          <div style={{ padding: 10 }}> {display(deaths)}</div>
-        </Card>
-        <Card
-          size="small"
-          style={{ background: '#F4F4F4', height: '100%' }}
-          bordered={false}
-          bodyStyle={{ padding: 0, margin: 0, display: 'flex' }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
+          <div style={{ display: 'flex' }}>
+            <div style={{ margin: 5 }}>
+              {display(incidence)}
+            </div>
+            <div style={{ padding: 5 }}> {display(deaths)}</div>
+          </div>
+        </div>
+        <div
+          style={{ background: '#F4F4F4' }}
           key="5"
+          ref={c2}
           data-grid={{
             w: 5,
             h: 5,
@@ -277,21 +308,21 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          <div style={{ width: '70%' }}>
-            {display(dailyInfection)}
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Health Worker Infections</span>
           </div>
-          <div style={{ padding: 10 }}> {display(heathWorkers)}</div>
-        </Card>
-        <Card
-          size="small"
-          style={{ background: '#F4F4F4', height: '100%' }}
-          bordered={false}
-          bodyStyle={{
-            background: '#F4F4F4', display: 'flex', flexDirection: 'column'
-          }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
+          <div style={{ display: 'flex' }}>
+            <div style={{ margin: 5 }}>
+              {display(dailyInfection)}
+            </div>
+            <div style={{ padding: 5 }}>{display(heathWorkers)}</div>
+          </div>
+        </div>
+        <div
+          style={{ background: '#F4F4F4' }}
+          // bodyStyle={{background: '#F4F4F4', display: 'flex', flexDirection: 'column'}}
           key="6"
+          ref={c3}
           data-grid={{
             w: 3,
             h: 11,
@@ -300,19 +331,26 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center' }}>{display(travellers)}</div>
-          <div style={{}}>{display(positiveAtPOE)}</div>
-        </Card>
-        <Card
-          size="small"
-          bordered={false}
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Travels and Testing</span>
+            <Select defaultValue="jack" style={{ width: 170, marginLeft: 'auto' }} bordered={false}>
+              <Option value="jack">All Point of Entry</Option>
+              <Option value="lucy">Lucy</Option>
+              <Option value="Yiminghe">yiminghe</Option>
+            </Select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: d3.height ? d3.height - 38 : '' }}>
+            <div style={{ margin: 5 }}>
+              {display(travellers)}
+            </div>
+            <div style={{ padding: 5 }}>{display(positiveAtPOE)}</div>
+          </div>
+        </div>
+        <div
           style={{ background: '#F4F4F4', height: '100%' }}
-          bodyStyle={{
-            background: '#F4F4F4', padding: 0, margin: 0, display: 'flex'
-          }}
-          headStyle={{ background: '#D8D8D8' }}
-          title="Card title"
           key="7"
+          ref={c4}
           data-grid={{
             w: 9,
             h: 6,
@@ -321,11 +359,21 @@ export const Dashboard = observer(() => {
             static: false,
           }}
         >
-          <div style={{ width: '30%' }}> {display(heathWorkers)}</div>
-          <div style={{ width: '70%' }}>
-            {display(dailyInfection)}
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Testing Sites and Capacity</span>
           </div>
-        </Card>
+          <div style={{ display: 'flex' }}>
+            <div style={{ margin: 5 }}>
+              <Select defaultValue="jack" style={{ width: 170, marginLeft: 'auto' }}>
+                <Option value="jack">All Testing Sites</Option>
+                <Option value="lucy">Lucy</Option>
+                <Option value="Yiminghe">yiminghe</Option>
+              </Select>
+              {display(travellers)}
+            </div>
+            <div style={{ padding: 5 }}>{display(testingCapacity)}</div>
+          </div>
+        </div>
       </ResponsiveGridLayout>
     </div>
   );

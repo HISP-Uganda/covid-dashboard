@@ -1,19 +1,15 @@
 import React, { FC } from "react";
 
 interface TextValueProps {
-  color: string;
   label?: string;
   value: string;
-  className: string;
-  width?: string;
+  className?: string;
 }
 
 export const TextValue: FC<TextValueProps> = ({
-  color,
   label,
   value,
-  className,
-  width,
+  className = 'blue',
 }) => {
   return (
     <div className="container">

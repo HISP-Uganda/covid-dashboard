@@ -24,24 +24,22 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
   const display = (vals: any) => {
     switch (vals.chart) {
       case 'circle':
-        return <ProgressValue key={vals.dx} value={vals.value} chart="circle" />
+        return <ProgressValue key={vals.dx} value={vals.value} chart="circle" showInfo={vals.showInfo} strokeWidth={vals.strokeWidth} />
       case 'line':
         return <ProgressValue key={vals.dx} value={vals.value} chart="line" />
       case 'textValue':
         return <TextValue
           key={vals.dx}
-          color="#000066"
           label={vals.label}
           value={vals.value}
-          className="red"
+          className={vals.className}
         />
       default:
         return <TextValue
           key={vals.dx}
-          color="#000066"
           label={vals.label}
           value={vals.value}
-          className="red"
+          className={vals.className}
         />
     }
   }

@@ -10,22 +10,10 @@ export const Covid19 = observer(() => {
     <div>
       <Menu mode="horizontal" defaultSelectedKeys={["cases"]}>
         <Menu.Item key="cases" style={{ textTransform: "uppercase" }}>
-          <Link to={`${url}/cases`}>Cases and EPI</Link>
+          <Link to={`${url}/cases`}>Dashboard</Link>
         </Menu.Item>
         <Menu.Item key="treatment" style={{ textTransform: "uppercase" }}>
-          <Link to={`${url}/treatment`}>Treatment</Link>
-        </Menu.Item>
-        <Menu.Item key="surveillance" style={{ textTransform: "uppercase" }}>
-          Surveillance
-        </Menu.Item>
-        <Menu.Item key="prevention" style={{ textTransform: "uppercase" }}>
-          Prevention
-        </Menu.Item>
-        <Menu.Item key="risk" style={{ textTransform: "uppercase" }}>
-          Risk
-        </Menu.Item>
-        <Menu.Item key="stock" style={{ textTransform: "uppercase" }}>
-          Stock Status
+          <Link to={`${url}/treatment`}>Summary Status</Link>
         </Menu.Item>
       </Menu>
       <Switch>

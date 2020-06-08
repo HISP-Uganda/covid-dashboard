@@ -334,7 +334,10 @@ export class Visualization {
           return [d.dx, {
             label: d.label,
             dx: d.dx,
-            value: searchedNum ? Number(searchedNum[1]).toLocaleString() : '0',
+            showInfo: d.showInfo,
+            strokeWidth: d.strokeWidth,
+            className: d.className,
+            value: searchedNum ? Number(searchedNum[1]).toFixed().toLocaleString() : '0',
             chart: d.chart,
             child
           }]

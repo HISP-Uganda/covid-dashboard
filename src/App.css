@@ -10,9 +10,8 @@
 .headers {
   margin: 0;
   padding: 0;
-  line-height: 48px;
+  /* line-height: 48px; */
   display: flex;
-  padding: 5px;
   background: #d9edf7;
 }
 .modified-item {
@@ -34,7 +33,13 @@
   border-bottom-color: #4a235a;
 } */
 .red {
-  color: #ff0000;
+  color: #AB3D3D;
+  font-size: 28px;
+  font-family: Arial;
+}
+
+.blue {
+  color: #1B3A50;
   font-size: 28px;
   font-family: Arial;
 }

@@ -38,27 +38,22 @@ const initialize = async () => {
       <Router>
         <div>
           <Header
-            style={{ background: "#000066", display: "flex", padding: 0 }}
+            style={{ background: "#EBEFF9", display: "flex", padding: 0 }}
           >
             <div
               className="logo"
-              style={{ width: 120, textAlign: "center", height: 32 }}
+              style={{ width: 120, textAlign: "center" }}
             >
-              <img src={logo} alt="Logo" height="32" />
+              <img src={logo} alt="Logo" height="48" />
             </div>
-            <Menu
-              theme="dark"
-              mode="horizontal"
-              defaultSelectedKeys={["1"]}
-              style={{
-                background: "#000066",
-              }}
-            >
-              <Menu.Item key="1" className="modified-item">
-                <Link to="/">COVID-19</Link>
-              </Menu.Item>
-            </Menu>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+              <span style={{ marginBottom: -10, marginTop: 0 }}>Ministry of Health</span>
+              <span style={{ marginTop: -30 }}>Lockdown Lift Checklist Monitoring Dashboard </span>
+            </div>
           </Header>
+          <hr style={{ margin: 0, border: '1px solid black' }} />
+          <hr style={{ margin: 0, border: '1px solid yellow' }} />
+          <hr style={{ margin: 0, border: '1px solid red' }} />
           <Switch>
             <Route path="/covid-19">
               <Covid19 />
