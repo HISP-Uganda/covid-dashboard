@@ -13,7 +13,9 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
   const store = useStore();
 
   useEffect(() => {
-    element.setOu([store.selectedOrgUnit]);
+    if (element.orgUnitGroups.length === 0) {
+      element.setOu([store.selectedOrgUnit]);
+    }
     element.fetchFromAnalytics();
   }, [element, store.selectedOrgUnit]);
 
@@ -21,5 +23,5 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
     return <div>Loading...</div>;
   }
 
-  return  <HighchartsReact highcharts={Highcharts} options={element.chart} />;
+  return <HighchartsReact highcharts={Highcharts} options={element.chart} />;
 });

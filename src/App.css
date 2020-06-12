@@ -33,9 +33,13 @@
   border-bottom-color: #4a235a;
 } */
 .red {
-  color: #AB3D3D;
+  color: #AB2916;
   font-size: 28px;
   font-family: Arial;
+}
+
+.green{
+  background: #17803A;
 }
 
 .blue {

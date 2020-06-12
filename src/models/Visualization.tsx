@@ -20,7 +20,7 @@ export class Visualization {
   @observable yAxis: string = "";
   @observable loading: boolean = false;
   @observable cssClass = "";
-  @observable editable: boolean = process.env.NODE_ENV === "production";
+  @observable editable: boolean = process.env.NODE_ENV === "development";
 
   @observable dx: any = [];
   @observable periods: string[] = [];
@@ -29,6 +29,7 @@ export class Visualization {
   @observable filterByPeriods: boolean = true;
   @observable geoJson: any;
   @observable metadata: any = {}
+  @observable orgUnitGroups: string[] = [];
 
   @action setLoading = (val: boolean) => (this.loading = val);
   @action setDx = (dx: any[]) => (this.dx = dx);
@@ -45,10 +46,23 @@ export class Visualization {
   @action setD2 = (val: any) => (this.d2 = val);
   @action setCssClass = (val: any) => (this.cssClass = val);
   @action setMetadata = (val: any) => (this.metadata = val);
+  @action setOrgUnitGroups = (val: any) => this.orgUnitGroups = val;
   @action setDimension = (width: number, height: number) => {
     this.width = width;
     this.height = height;
   };
+
+  @action loadOrgUnitGroups = async () => {
+    const api = this.d2.Api.getApi();
+    const { organisationUnitGroups } = await api.get(`organisationUnitGroups.json`, {
+      fields: "organisationUnits",
+      filter: `id:in:[${this.orgUnitGroups.join(',')}]`
+    });
+    const units = organisationUnitGroups.map(({ organisationUnits }: any) => {
+      return organisationUnits.map((ou: any) => ou.id)
+    });
+    this.setOu(flatten(units));
+  }
   @action setCoordinates = (x: number, y: number, w: number, h: number) => {
     this.x = x;
     this.y = y;
@@ -56,6 +70,10 @@ export class Visualization {
     this.h = h;
   };
   @action fetchFromAnalytics = async () => {
+    if (this.orgUnitGroups.length > 0) {
+      await this.loadOrgUnitGroups();
+      console.log(this.orgUnitGroups.length)
+    }
     if (this.chartType !== "map") {
       this.setLoading(true);
     }
@@ -80,6 +98,9 @@ export class Visualization {
         req = req.addPeriodDimension(this.periods);
       }
       const data = await this.d2.analytics.aggregate.get(req);
+      if (this.orgUnitGroups.length > 0) {
+        console.log(data)
+      }
       this.setData(data);
     }
     if (this.chartType !== "map") {
@@ -151,17 +172,23 @@ export class Visualization {
       };
       let plotOptions = {};
       let tooltip: any = {};
-
       if (this.chartType === "column" && this.data) {
         chart = { ...chart, type: this.chartType };
         let categories: any[] = [];
-        if (!this.filterByPeriods) {
+        if (!this.filterByOus) {
+          categories = this.data.metaData.dimensions.ou.map((p: string) => {
+            return this.data.metaData.items[p].name;
+          });
+        } else {
           categories = this.data.metaData.dimensions.pe.map((p: string) => {
             return this.data.metaData.items[p].name;
           });
+        }
 
-          series = this.dx.map((d: any) => {
-            const data = this.data.metaData.dimensions.pe.map((p: string) => {
+        series = this.dx.map((d: any) => {
+          let data;
+          if (!this.filterByOus) {
+            data = this.data.metaData.dimensions.ou.map((p: string) => {
               const dy = this.data.rows.find((r: any[]) => {
                 return d.dx === r[0] && p === r[1];
               });
@@ -171,9 +198,20 @@ export class Visualization {
                 return 0;
               }
             });
-            return { name: this.data.metaData.items[d.dx].name, data };
-          });
-        }
+          } else {
+            data = this.data.metaData.dimensions.pe.map((p: string) => {
+              const dy = this.data.rows.find((r: any[]) => {
+                return d.dx === r[0] && p === r[1];
+              });
+              if (dy) {
+                return Number(dy[2]);
+              } else {
+                return 0;
+              }
+            });
+          }
+          return { name: this.data.metaData.items[d.dx].name, data };
+        });
 
         xAxis = {
           categories,

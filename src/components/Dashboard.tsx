@@ -1,4 +1,4 @@
-import { Select } from "antd";
+// import { Select } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
@@ -11,7 +11,7 @@ import { SingleValues } from "./visualizations/SingleValues";
 
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
-const { Option } = Select;
+// const { Option } = Select;
 
 
 export const Dashboard = observer(() => {
@@ -44,8 +44,8 @@ export const Dashboard = observer(() => {
   beds.setData({ rows: [] });
   beds.setD2(store.d2);
   beds.setDx([
-    { dx: 'C3a2t1kIppc', label: 'Bed Capacity' },
-    { dx: 'rw0BHHe8S29', label: 'Beds Available', className: 'red' },
+    { dx: 'QTLv7jKT6tU', label: 'Bed Capacity' },
+    { dx: 'THaNba5GyJj', label: 'Beds Available', className: 'red' },
     { dx: 'oK76O9uCtEe', label: 'Admissions', className: 'red' },
     { dx: 'v9r6qu7MAvk', chart: 'circle', showInfo: true, strokeWidth: 5 }
   ]);
@@ -58,7 +58,7 @@ export const Dashboard = observer(() => {
   testingAndContactTracing.setData({ rows: [] });
   testingAndContactTracing.setD2(store.d2);
   testingAndContactTracing.setDx([
-    { dx: 'BM25rsG76xg', label: 'Total Tests Done' },
+    { dx: 'UmgcTyhsroc', label: 'Total Tests Done' },
     {
       dx: 'wAOwXzZwZhs', className: 'red', label: 'Tested Positive', child: {
         dx: 'DhGtpi9ehqp',
@@ -161,7 +161,11 @@ export const Dashboard = observer(() => {
   travellers.setData({ rows: [] });
   travellers.setD2(store.d2);
   travellers.setDx([
-    { dx: 'pWFRpK6LDuG', label: 'Travellers Registered at POEs' },
+    { dx: 'Wt8gxkBiJZ8', label: 'Travellers Registered at POEs' },
+    { dx: 'BMi59SCKIFi', label: 'Travellers Tested at POEs' },
+    { dx: 'GGoxErWQ12J', label: 'Travellers Tested Positive' },
+    { dx: 'vpDs2i5Fc4r', label: 'Contacts of Travellers Tested at POEs' },
+    { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
   ]);
   travellers.setPeriods(['THIS_YEAR']);
   travellers.setFilterByOus(true);
@@ -172,26 +176,49 @@ export const Dashboard = observer(() => {
   const positiveAtPOE = new Visualization();
   positiveAtPOE.setD2(store.d2);
   positiveAtPOE.setDx([
-    { dx: 'Etwx5Yv3jBp', label: 'POEs Available' },
+    { dx: 'upO9ps9ItXy', label: 'POEs Available' },
   ]);
   positiveAtPOE.setPeriods(['LAST_14_DAYS']);
   positiveAtPOE.setFilterByOus(true);
   positiveAtPOE.setFilterByPeriods(false);
   positiveAtPOE.setType('chart');
   positiveAtPOE.setChartType('column');
-  positiveAtPOE.setDimension(d3.width, d3.height - 500);
+  // positiveAtPOE.setOrgUnitGroups(['aobWYizg7hR'])
+  positiveAtPOE.setDimension(d3.width - 10, d3.height - 500);
 
   const testingCapacity = new Visualization();
   testingCapacity.setD2(store.d2);
   testingCapacity.setDx([
-    { dx: 'Etwx5Yv3jBp', label: 'POEs Available' },
+    { dx: 'qdnLQfWOYzC', label: 'POEs Available' },
   ]);
-  testingCapacity.setPeriods(['LAST_14_DAYS']);
-  testingCapacity.setFilterByOus(true);
-  testingCapacity.setFilterByPeriods(false);
+  testingCapacity.setPeriods(['THIS_YEAR']);
+  testingCapacity.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
+  testingCapacity.setFilterByOus(false);
+  testingCapacity.setFilterByPeriods(true);
   testingCapacity.setType('chart');
   testingCapacity.setChartType('column');
-  testingCapacity.setDimension(d4.width - 210, d4.height - 50)
+  testingCapacity.setDimension(d4.width - 190, d4.height - 50)
+
+  const testingSites = new Visualization();
+  testingSites.setD2(store.d2);
+  testingSites.setData({ rows: [] });
+
+  testingSites.setDx([
+    { dx: 'pSaKi4mRE9N', label: 'Total Sites Established' },
+    {
+      dx: 'Ajm4ssIgZq4', label: 'Total Testing Capacity',
+    },
+    {
+      dx: 'Etwx5Yv3jBp', className: 'red', label: 'Total Tests Today', child: {
+        dx: 'kLUxutfrUjZ',
+        chart: 'line'
+      }
+    },
+  ]);
+  testingSites.setPeriods(['THIS_YEAR']);
+  testingSites.setFilterByOus(true);
+  testingSites.setFilterByPeriods(true);
+  testingSites.setType('textValues');
 
   return (
     <div>
@@ -219,16 +246,11 @@ export const Dashboard = observer(() => {
             h: 2,
             x: 0,
             y: 0,
-            static: false,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
             <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
-            <Select defaultValue="jack" style={{ width: 170, marginLeft: 'auto' }} bordered={false}>
-              <Option value="jack">All Treatment Centers</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="Yiminghe">yiminghe</Option>
-            </Select>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", height: d11.height ? d11.height - 38 : 30 }}>
             {display(beds)}
@@ -243,7 +265,7 @@ export const Dashboard = observer(() => {
             h: 2,
             x: 3,
             y: 0,
-            static: false,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
@@ -262,7 +284,7 @@ export const Dashboard = observer(() => {
             h: 2,
             x: 9,
             y: 0,
-            static: false,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
@@ -271,7 +293,6 @@ export const Dashboard = observer(() => {
           <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", height: d33.height ? d33.height - 38 : 30 }}>
             {display(poes)}
           </div>
-          {/* */}
         </div>
 
         <div
@@ -283,7 +304,7 @@ export const Dashboard = observer(() => {
             h: 5,
             x: 0,
             y: 2,
-            static: false,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
@@ -293,7 +314,7 @@ export const Dashboard = observer(() => {
             <div style={{ margin: 5 }}>
               {display(incidence)}
             </div>
-            <div style={{ padding: 5 }}> {display(deaths)}</div>
+            <div style={{ padding: 5, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}> {display(deaths)}</div>
           </div>
         </div>
         <div
@@ -304,8 +325,8 @@ export const Dashboard = observer(() => {
             w: 5,
             h: 5,
             x: 4,
-            y: 3,
-            static: false,
+            y: 2,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
@@ -315,12 +336,11 @@ export const Dashboard = observer(() => {
             <div style={{ margin: 5 }}>
               {display(dailyInfection)}
             </div>
-            <div style={{ padding: 5 }}>{display(heathWorkers)}</div>
+            <div style={{ padding: 5, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>{display(heathWorkers)}</div>
           </div>
         </div>
         <div
           style={{ background: '#F4F4F4' }}
-          // bodyStyle={{background: '#F4F4F4', display: 'flex', flexDirection: 'column'}}
           key="6"
           ref={c3}
           data-grid={{
@@ -328,20 +348,15 @@ export const Dashboard = observer(() => {
             h: 11,
             x: 9,
             y: 2,
-            static: false,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
             <span style={{ marginLeft: 10 }}>Travels and Testing</span>
-            <Select defaultValue="jack" style={{ width: 170, marginLeft: 'auto' }} bordered={false}>
-              <Option value="jack">All Point of Entry</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="Yiminghe">yiminghe</Option>
-            </Select>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: d3.height ? d3.height - 38 : '' }}>
-            <div style={{ margin: 5 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
+            <div style={{ margin: 5, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
               {display(travellers)}
             </div>
             <div style={{ padding: 5 }}>{display(positiveAtPOE)}</div>
@@ -355,21 +370,16 @@ export const Dashboard = observer(() => {
             w: 9,
             h: 6,
             x: 0,
-            y: 6,
-            static: false,
+            y: 7,
+            static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
             <span style={{ marginLeft: 10 }}>Testing Sites and Capacity</span>
           </div>
           <div style={{ display: 'flex' }}>
-            <div style={{ margin: 5 }}>
-              <Select defaultValue="jack" style={{ width: 170, marginLeft: 'auto' }}>
-                <Option value="jack">All Testing Sites</Option>
-                <Option value="lucy">Lucy</Option>
-                <Option value="Yiminghe">yiminghe</Option>
-              </Select>
-              {display(travellers)}
+            <div style={{ margin: 5, height: d4.height - 50, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+              {display(testingSites)}
             </div>
             <div style={{ padding: 5 }}>{display(testingCapacity)}</div>
           </div>
