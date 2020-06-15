@@ -25,7 +25,7 @@ export const Covid19 = observer(() => {
           <Redirect to={`${url}/cases`} />
         </Route>
       </Switch>
-      <div style={{background:'#D8D8D8'}}>
+      <div style={{ background: '#D8D8D8', padding: 10, textAlign: 'right' }}>
         Hisp Uganda
       </div>
     </div>
