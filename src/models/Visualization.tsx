@@ -84,7 +84,7 @@ export class Visualization {
       })
       let req = new this.d2.analytics.request()
         .addDataDimension(flatten(realDimensions))
-        .withAggregationType("SUM")
+        // .withAggregationType("SUM")
         .withSkipRounding(true);
 
       if (this.filterByOus) {
@@ -99,7 +99,7 @@ export class Visualization {
       }
       const data = await this.d2.analytics.aggregate.get(req);
       if (this.orgUnitGroups.length > 0) {
-        console.log(data)
+        // console.log(J)
       }
       this.setData(data);
     }
@@ -350,6 +350,11 @@ export class Visualization {
       return fullChart;
     } else if (this.type === "textValues") {
       if (this.data && this.dx.length > 0) {
+        const dxOf = this.dx.find((dx: any) => dx.dx === 'eYpIcHdIk5J');
+        if (dxOf) {
+          console.log(JSON.stringify(this.data.rows));
+        }
+
         const dxes = this.dx.map((d: any, i: number) => {
           const searchedNum = this.data.rows.find((row: any) => {
             return row[0] === d.dx;
@@ -365,7 +370,9 @@ export class Visualization {
             child = {
               label: d.child.label,
               value: childValue ? childValue[1] : '0',
-              chart: d.child.chart
+              chart: d.child.chart,
+              strokeWidth: d.child.strokeWidth,
+              otherText: d.child.otherText
             }
           }
 
@@ -374,6 +381,7 @@ export class Visualization {
             dx: d.dx,
             showInfo: d.showInfo,
             strokeWidth: d.strokeWidth,
+            otherText: d.otherText,
             className: d.className,
             value: searchedNum ? Number(searchedNum[1]).toFixed().toLocaleString() : '0',
             chart: d.chart,

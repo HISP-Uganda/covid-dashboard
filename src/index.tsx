@@ -11,10 +11,10 @@ import {
   HashRouter as Router,
   Switch,
   Route,
-  Link,
+  // Link,
   Redirect,
 } from "react-router-dom";
-import { Menu, Layout } from "antd";
+import { Layout } from "antd";
 import logo from "./images/image.png";
 import { Covid19 } from "./components/Covid19";
 

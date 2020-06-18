@@ -50,22 +50,21 @@ export const Dashboard = observer(() => {
     { dx: 'v9r6qu7MAvk', chart: 'circle', showInfo: true, strokeWidth: 5 }
   ]);
   beds.setPeriods(['THIS_YEAR']);
-  beds.setFilterByOus(true);
-  beds.setFilterByPeriods(true);
   beds.setType('textValues');
 
   const testingAndContactTracing = new Visualization();
   testingAndContactTracing.setData({ rows: [] });
   testingAndContactTracing.setD2(store.d2);
   testingAndContactTracing.setDx([
-    { dx: 'UmgcTyhsroc', label: 'Total Tests Done' },
+    { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
     {
-      dx: 'wAOwXzZwZhs', className: 'red', label: 'Tested Positive', child: {
+      dx: 'zkkOssLJR1m', className: 'red', label: 'Tested Positive', child: {
         dx: 'DhGtpi9ehqp',
-        chart: 'line'
+        chart: 'line',
+        strokeWidth: 8
       }
     },
-    { dx: 'a7trfqwqfDR', label: 'Contacts Identified' },
+    { dx: 'AWqQSTtuWGl', label: 'Contacts Identified' },
     {
       dx: 'Aiu4kJtREFN', label: 'Contacts Tested', child: {
         dx: 'kLUxutfrUjZ',
@@ -80,8 +79,6 @@ export const Dashboard = observer(() => {
     }
   ]);
   testingAndContactTracing.setPeriods(['THIS_YEAR']);
-  testingAndContactTracing.setFilterByOus(true);
-  testingAndContactTracing.setFilterByPeriods(true);
   testingAndContactTracing.setType('textValues');
 
   const poes = new Visualization();
@@ -89,12 +86,10 @@ export const Dashboard = observer(() => {
   poes.setD2(store.d2);
   poes.setDx([
     { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
-    { dx: 'mHl9HLVJ9X0', label: 'POEs Activated' },
-    { dx: 'uKHils0UxEe', label: 'POEs Testing' },
+    { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
+    { dx: 'WhVCS645g2q', label: 'POEs Testing' },
   ]);
   poes.setPeriods(['THIS_YEAR']);
-  poes.setFilterByOus(true);
-  poes.setFilterByPeriods(true);
   poes.setType('textValues');
 
   const incidence = new Visualization();
@@ -103,8 +98,6 @@ export const Dashboard = observer(() => {
     { dx: 'wAOwXzZwZhs', label: 'POEs Available' },
   ]);
   incidence.setPeriods(['LAST_14_DAYS']);
-  incidence.setFilterByOus(true);
-  incidence.setFilterByPeriods(false);
   incidence.setType('chart');
   incidence.setChartType('line');
   incidence.setDimension(d1.width - 120, d1.height - 50);
@@ -115,8 +108,6 @@ export const Dashboard = observer(() => {
     { dx: 'Etwx5Yv3jBp', label: 'POEs Available' },
   ]);
   dailyInfection.setPeriods(['LAST_14_DAYS']);
-  dailyInfection.setFilterByOus(true);
-  dailyInfection.setFilterByPeriods(false);
   dailyInfection.setType('chart');
   dailyInfection.setChartType('column');
   dailyInfection.setDimension(d2.width - 200, d2.height - 50)
@@ -129,8 +120,6 @@ export const Dashboard = observer(() => {
     { dx: 'C3a2t1kIppc', label: 'Total Deaths' },
   ]);
   deaths.setPeriods(['THIS_YEAR']);
-  deaths.setFilterByOus(true);
-  deaths.setFilterByPeriods(true);
   deaths.setType('textValues');
 
   const heathWorkers = new Visualization();
@@ -140,21 +129,19 @@ export const Dashboard = observer(() => {
   heathWorkers.setDx([
     { dx: 'pSaKi4mRE9N', label: 'Total Health Workers' },
     {
-      dx: 'Ajm4ssIgZq4', label: 'Health Workers Testers', child: {
-        dx: 'kLUxutfrUjZ',
+      dx: 'Ajm4ssIgZq4', label: 'Health Workers Tested', child: {
+        dx: 'Ajm4ssIgZq4',
         chart: 'line'
       }
     },
     {
       dx: 'Etwx5Yv3jBp', className: 'red', label: 'Positive Health Workers', child: {
-        dx: 'kLUxutfrUjZ',
+        dx: 'omNy6QA0ptE',
         chart: 'line'
       }
     },
   ]);
   heathWorkers.setPeriods(['THIS_YEAR']);
-  heathWorkers.setFilterByOus(true);
-  heathWorkers.setFilterByPeriods(true);
   heathWorkers.setType('textValues');
 
   const travellers = new Visualization();
@@ -168,8 +155,6 @@ export const Dashboard = observer(() => {
     { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
   ]);
   travellers.setPeriods(['THIS_YEAR']);
-  travellers.setFilterByOus(true);
-  travellers.setFilterByPeriods(true);
   travellers.setType('textValues');
 
 
@@ -179,8 +164,6 @@ export const Dashboard = observer(() => {
     { dx: 'upO9ps9ItXy', label: 'POEs Available' },
   ]);
   positiveAtPOE.setPeriods(['LAST_14_DAYS']);
-  positiveAtPOE.setFilterByOus(true);
-  positiveAtPOE.setFilterByPeriods(false);
   positiveAtPOE.setType('chart');
   positiveAtPOE.setChartType('column');
   // positiveAtPOE.setOrgUnitGroups(['aobWYizg7hR'])
@@ -193,8 +176,6 @@ export const Dashboard = observer(() => {
   ]);
   testingCapacity.setPeriods(['THIS_YEAR']);
   testingCapacity.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
-  testingCapacity.setFilterByOus(false);
-  testingCapacity.setFilterByPeriods(true);
   testingCapacity.setType('chart');
   testingCapacity.setChartType('column');
   testingCapacity.setDimension(d4.width - 190, d4.height - 50)
@@ -216,8 +197,6 @@ export const Dashboard = observer(() => {
     },
   ]);
   testingSites.setPeriods(['THIS_YEAR']);
-  testingSites.setFilterByOus(true);
-  testingSites.setFilterByPeriods(true);
   testingSites.setType('textValues');
 
   return (
@@ -378,7 +357,7 @@ export const Dashboard = observer(() => {
             <span style={{ marginLeft: 10 }}>Testing Sites and Capacity</span>
           </div>
           <div style={{ display: 'flex' }}>
-            <div style={{ margin: 5, height: d4.height - 50, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+            <div style={{ margin: 5, height: d4.height ? d4.height - 50 : '', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
               {display(testingSites)}
             </div>
             <div style={{ padding: 5 }}>{display(testingCapacity)}</div>
