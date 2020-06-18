@@ -26,7 +26,6 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
       case 'circle':
       case 'line':
         return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} strokeWidth={vals.strokeWidth} />
-
       case 'textValue':
         return <TextValue
           key={vals.dx}

@@ -32,6 +32,8 @@ export const Dashboard = observer(() => {
           return <Map element={element} />;
         }
         return <Chart element={element} />;
+      case "multiple":
+        return <Chart element={element} />;
       case "plainText":
         return element.data;
 
@@ -100,6 +102,7 @@ export const Dashboard = observer(() => {
   incidence.setPeriods(['LAST_14_DAYS']);
   incidence.setType('chart');
   incidence.setChartType('line');
+  incidence.setFilterByPeriods(false);
   incidence.setDimension(d1.width - 120, d1.height - 50);
 
   const dailyInfection = new Visualization();
@@ -117,7 +120,8 @@ export const Dashboard = observer(() => {
   deaths.setData({ rows: [] });
 
   deaths.setDx([
-    { dx: 'C3a2t1kIppc', label: 'Total Deaths' },
+    { dx: 'D7y8pwGMsgp', label: 'Total Deaths' },
+    { dx: 'ob2qpzPpniN', label: 'Case Fatality Rates', otherText: '%' },
   ]);
   deaths.setPeriods(['THIS_YEAR']);
   deaths.setType('textValues');
@@ -127,19 +131,17 @@ export const Dashboard = observer(() => {
   heathWorkers.setData({ rows: [] });
 
   heathWorkers.setDx([
-    { dx: 'pSaKi4mRE9N', label: 'Total Health Workers' },
     {
-      dx: 'Ajm4ssIgZq4', label: 'Health Workers Tested', child: {
-        dx: 'Ajm4ssIgZq4',
-        chart: 'line'
-      }
+      dx: 'Ajm4ssIgZq4', label: 'Health Workers Tested'
     },
     {
-      dx: 'Etwx5Yv3jBp', className: 'red', label: 'Positive Health Workers', child: {
-        dx: 'omNy6QA0ptE',
-        chart: 'line'
-      }
+      dx: 'Etwx5Yv3jBp', className: 'red', label: 'Positive Health Workers'
     },
+    {
+      dx: 'omNy6QA0ptE',
+      chart: 'circle',
+      showInfo: true
+    }
   ]);
   heathWorkers.setPeriods(['THIS_YEAR']);
   heathWorkers.setType('textValues');
@@ -172,12 +174,15 @@ export const Dashboard = observer(() => {
   const testingCapacity = new Visualization();
   testingCapacity.setD2(store.d2);
   testingCapacity.setDx([
-    { dx: 'qdnLQfWOYzC', label: 'POEs Available' },
+    { dx: 'CemgWPzdnUf', label: 'Tests Done Today', type: 'column', yAxis: 1 },
+    { dx: 'zkkOssLJR1m', label: 'POEs Available', type: 'column', yAxis: 1 },
+    { dx: 'Eh4jODrtZBT', label: 'Daily Case Incidence', type: 'spline', yAxis: 2 },
   ]);
-  testingCapacity.setPeriods(['THIS_YEAR']);
-  testingCapacity.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
-  testingCapacity.setType('chart');
-  testingCapacity.setChartType('column');
+  testingCapacity.setPeriods(['LAST_14_DAYS']);
+  // testingCapacity.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
+  testingCapacity.setFilterByPeriods(false);
+  testingCapacity.setType('multiple');
+  // testingCapacity.setChartType('column');
   testingCapacity.setDimension(d4.width - 190, d4.height - 50)
 
   const testingSites = new Visualization();
@@ -217,32 +222,13 @@ export const Dashboard = observer(() => {
         rowHeight={66}
       >
         <div
-          style={{ display: 'flex', flexDirection: 'column', background: '#F4F4F4' }}
-          key="1"
-          ref={c11}
-          data-grid={{
-            w: 3,
-            h: 2,
-            x: 0,
-            y: 0,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
-            <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", height: d11.height ? d11.height - 38 : 30 }}>
-            {display(beds)}
-          </div>
-        </div>
-        <div
           style={{ background: '#F4F4F4', height: '100%' }}
           key="2"
           ref={c22}
           data-grid={{
             w: 6,
             h: 2,
-            x: 3,
+            x: 0,
             y: 0,
             static: process.env.NODE_ENV === "production",
           }}
@@ -252,6 +238,26 @@ export const Dashboard = observer(() => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30 }}>
             {display(testingAndContactTracing)}
+          </div>
+        </div>
+
+        <div
+          style={{ display: 'flex', flexDirection: 'column', background: '#F4F4F4' }}
+          key="1"
+          ref={c11}
+          data-grid={{
+            w: 3,
+            h: 2,
+            x: 6,
+            y: 0,
+            static: process.env.NODE_ENV === "production",
+          }}
+        >
+          <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', height: d11.height ? d11.height - 38 : 30 }}>
+            {display(testingSites)}
           </div>
         </div>
         <div
@@ -269,7 +275,7 @@ export const Dashboard = observer(() => {
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
             <span style={{ marginLeft: 10 }}>Point of Entries(POEs)</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", height: d33.height ? d33.height - 38 : 30 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d33.height ? d33.height - 38 : 30 }}>
             {display(poes)}
           </div>
         </div>
@@ -315,7 +321,7 @@ export const Dashboard = observer(() => {
             <div style={{ margin: 5 }}>
               {display(dailyInfection)}
             </div>
-            <div style={{ padding: 5, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>{display(heathWorkers)}</div>
+            <div style={{ padding: 5, display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', alignContent: 'center' }}>{display(heathWorkers)}</div>
           </div>
         </div>
         <div
@@ -324,7 +330,7 @@ export const Dashboard = observer(() => {
           ref={c3}
           data-grid={{
             w: 3,
-            h: 11,
+            h: 12,
             x: 9,
             y: 2,
             static: process.env.NODE_ENV === "production",
@@ -347,7 +353,7 @@ export const Dashboard = observer(() => {
           ref={c4}
           data-grid={{
             w: 9,
-            h: 6,
+            h: 7,
             x: 0,
             y: 7,
             static: process.env.NODE_ENV === "production",
@@ -358,7 +364,7 @@ export const Dashboard = observer(() => {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ margin: 5, height: d4.height ? d4.height - 50 : '', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-              {display(testingSites)}
+              {display(testingAndContactTracing)}
             </div>
             <div style={{ padding: 5 }}>{display(testingCapacity)}</div>
           </div>

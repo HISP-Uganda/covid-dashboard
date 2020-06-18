@@ -1,6 +1,7 @@
 import { observable, action, computed } from "mobx";
 import { generateUid } from "../utils/uid";
 import { fromPairs, flatten } from 'lodash'
+import Highcharts from "highcharts";
 
 export class Visualization {
   @observable height: number = 0;
@@ -150,6 +151,7 @@ export class Visualization {
 
   @computed
   get chart() {
+    // console.log(this.type);
     if (this.type === "chart") {
       let xAxis = {};
       let series: any[] = [];
@@ -348,13 +350,110 @@ export class Visualization {
         };
       }
       return fullChart;
-    } else if (this.type === "textValues") {
-      if (this.data && this.dx.length > 0) {
-        const dxOf = this.dx.find((dx: any) => dx.dx === 'eYpIcHdIk5J');
-        if (dxOf) {
-          console.log(JSON.stringify(this.data.rows));
+    } else if (this.type === "multiple") {
+
+      if (this.data) {
+        let categories: any[] = [];
+        if (!this.filterByOus) {
+          categories = this.data.metaData.dimensions.ou.map((p: string) => {
+            return this.data.metaData.items[p].name;
+          });
+        } else {
+          categories = this.data.metaData.dimensions.pe.map((p: string) => {
+            return this.data.metaData.items[p].name;
+          });
         }
 
+        const colors = Highcharts.getOptions().colors || [];
+        const legend = Highcharts.defaultOptions.legend || {};
+        const series = this.dx.map((d: any) => {
+          let data;
+          if (!this.filterByOus) {
+            data = this.data.metaData.dimensions.ou.map((p: string) => {
+              const dy = this.data.rows.find((r: any[]) => {
+                return d.dx === r[0] && p === r[1];
+              });
+              if (dy) {
+                return Number(dy[2]);
+              } else {
+                return 0;
+              }
+            });
+          } else {
+            data = this.data.metaData.dimensions.pe.map((p: string) => {
+              const dy = this.data.rows.find((r: any[]) => {
+                return d.dx === r[0] && p === r[1];
+              });
+              if (dy) {
+                return Number(dy[2]);
+              } else {
+                return 0;
+              }
+            });
+          }
+          return {
+            name: this.data.metaData.items[d.dx].name, data, type: d.type, yAxis: d.yAxis, tooltip: {
+              valueSuffix: 'People'
+            }
+          };
+        });
+
+        console.log(series);
+        return {
+          chart: {
+            zoomType: 'xy',
+            height: this.height,
+            width: this.width,
+          },
+          xAxis: [{
+            categories,
+            crosshair: true
+          }],
+          yAxis: [{ // Primary yAxis
+            labels: {
+              format: '{value}',
+              style: {
+                color: colors[1]
+              }
+            },
+            title: {
+              text: 'Temperature',
+              style: {
+                color: colors[1]
+              }
+            }
+          }, { // Secondary yAxis
+            title: {
+              text: 'Rainfall',
+              style: {
+                color: colors[0]
+              }
+            },
+            labels: {
+              format: '{value}',
+              style: {
+                color: colors[0]
+              }
+            },
+            opposite: true
+          }],
+          tooltip: {
+            shared: true
+          },
+          legend: {
+            layout: 'vertical',
+            align: 'left',
+            x: 120,
+            verticalAlign: 'top',
+            y: 100,
+            floating: true,
+            backgroundColor: legend.backgroundColor || 'rgba(255,255,255,0.25)'
+          },
+          series
+        }
+      }
+    } else if (this.type === "textValues") {
+      if (this.data && this.dx.length > 0) {
         const dxes = this.dx.map((d: any, i: number) => {
           const searchedNum = this.data.rows.find((row: any) => {
             return row[0] === d.dx;
@@ -369,7 +468,7 @@ export class Visualization {
 
             child = {
               label: d.child.label,
-              value: childValue ? childValue[1] : '0',
+              value: childValue ? Number(Number(childValue[1]).toFixed(1)).toLocaleString() : '0',
               chart: d.child.chart,
               strokeWidth: d.child.strokeWidth,
               otherText: d.child.otherText
@@ -383,7 +482,7 @@ export class Visualization {
             strokeWidth: d.strokeWidth,
             otherText: d.otherText,
             className: d.className,
-            value: searchedNum ? Number(searchedNum[1]).toFixed().toLocaleString() : '0',
+            value: searchedNum ? Number(Number(searchedNum[1]).toFixed(1)).toLocaleString() : '0',
             chart: d.chart,
             child
           }]
