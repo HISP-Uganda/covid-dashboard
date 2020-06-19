@@ -1,7 +1,7 @@
 import { observable, action, computed } from "mobx";
 import { generateUid } from "../utils/uid";
 import { fromPairs, flatten } from 'lodash'
-import Highcharts from "highcharts";
+import Highcharts, { color } from "highcharts";
 
 export class Visualization {
   @observable height: number = 0;
@@ -84,6 +84,7 @@ export class Visualization {
         return [d.dx, ...child]
       })
       let req = new this.d2.analytics.request()
+        .withSkipData(false)
         .addDataDimension(flatten(realDimensions))
         // .withAggregationType("SUM")
         .withSkipRounding(true);
@@ -164,6 +165,7 @@ export class Visualization {
         subtitle: {
           text: `<span>${this.subtitle}</span>`,
         },
+        colors: ['#484848', '#AB2916']
       };
 
 
@@ -212,7 +214,12 @@ export class Visualization {
               }
             });
           }
-          return { name: this.data.metaData.items[d.dx].name, data };
+
+          let result: any = { name: d.label, data }
+          if (d.color) {
+            result = { ...result, color: d.color }
+          }
+          return result;
         });
 
         xAxis = {
@@ -272,7 +279,7 @@ export class Visualization {
           xAxis,
           series,
         };
-      } else if (this.chartType === "line" && this.data) {
+      } else if (["line", "spline"].indexOf(this.chartType) !== -1 && this.data) {
         let categories: any[] = [];
         chart = { ...chart, type: this.chartType };
         if (!this.filterByPeriods) {
@@ -291,7 +298,13 @@ export class Visualization {
                 return 0;
               }
             });
-            return { name: this.data.metaData.items[d.dx].name, data };
+            let result: any = { name: d.label, data }
+
+            if (d.color) {
+              result = { ...result, color: d.color }
+            }
+
+            return result;
           });
         }
 
@@ -365,7 +378,6 @@ export class Visualization {
         }
 
         const colors = Highcharts.getOptions().colors || [];
-        const legend = Highcharts.defaultOptions.legend || {};
         const series = this.dx.map((d: any) => {
           let data;
           if (!this.filterByOus) {
@@ -391,20 +403,28 @@ export class Visualization {
               }
             });
           }
-          return {
-            name: this.data.metaData.items[d.dx].name, data, type: d.type, yAxis: d.yAxis, tooltip: {
-              valueSuffix: 'People'
-            }
-          };
+          let result: any = {
+            name: d.label,
+            data,
+            type: d.type
+          }
+
+          if (d.yAxis) {
+            result = { ...result, yAxis: d.yAxis }
+          }
+          return result;
         });
 
-        console.log(series);
         return {
+          title: {
+            text: `<span style="font-size: 20px;font-weight:bolder">Daily Test Summary</span>`,
+          },
           chart: {
             zoomType: 'xy',
             height: this.height,
             width: this.width,
           },
+          colors: ['#484848', '#AB2916', '#1B3A50'],
           xAxis: [{
             categories,
             crosshair: true
@@ -417,14 +437,14 @@ export class Visualization {
               }
             },
             title: {
-              text: 'Temperature',
+              text: 'Number',
               style: {
                 color: colors[1]
               }
             }
           }, { // Secondary yAxis
             title: {
-              text: 'Rainfall',
+              text: 'Incidence',
               style: {
                 color: colors[0]
               }
@@ -440,15 +460,15 @@ export class Visualization {
           tooltip: {
             shared: true
           },
-          legend: {
-            layout: 'vertical',
-            align: 'left',
-            x: 120,
-            verticalAlign: 'top',
-            y: 100,
-            floating: true,
-            backgroundColor: legend.backgroundColor || 'rgba(255,255,255,0.25)'
-          },
+          // legend: {
+          // layout: 'vertical',
+          // align: 'left',
+          // x: 120,
+          // verticalAlign: 'top',
+          // y: 100,
+          // floating: true,
+          // backgroundColor: legend.backgroundColor || 'rgba(255,255,255,0.25)'
+          // },
           series
         }
       }
@@ -471,7 +491,8 @@ export class Visualization {
               value: childValue ? Number(Number(childValue[1]).toFixed(1)).toLocaleString() : '0',
               chart: d.child.chart,
               strokeWidth: d.child.strokeWidth,
-              otherText: d.child.otherText
+              otherText: d.child.otherText,
+              strokeColor: d.child.strokeColor
             }
           }
 
@@ -480,6 +501,7 @@ export class Visualization {
             dx: d.dx,
             showInfo: d.showInfo,
             strokeWidth: d.strokeWidth,
+            strokeColor: d.strokeColor,
             otherText: d.otherText,
             className: d.className,
             value: searchedNum ? Number(Number(searchedNum[1]).toFixed(1)).toLocaleString() : '0',

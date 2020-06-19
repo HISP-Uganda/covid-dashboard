@@ -47,8 +47,8 @@ const initialize = async () => {
               <img src={logo} alt="Logo" height="48" />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-              <span style={{ marginBottom: -10, marginTop: 0, fontSize: 24, fontWeight: 'bold' }}>Ministry of Health</span>
-              <span style={{ marginTop: -30 }}>COVID-19 Monitoring Dashboard </span>
+              <span style={{ marginBottom: -10, marginTop: 0, fontSize: 28 }}>Ministry of Health</span>
+              <span style={{ marginTop: -24, fontWeight: 'lighter', fontSize: 20 }}>COVID-19 Monitoring Dashboard </span>
             </div>
           </Header>
           <hr style={{ margin: 0, border: '1px solid black' }} />

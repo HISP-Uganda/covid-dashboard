@@ -9,6 +9,16 @@ interface SingleValuesProps {
   element: TItem;
 }
 
+const getFormat = (vals: any) => {
+  if (!vals.otherText) {
+    return (percent: number | undefined) => percent + '%'
+  }
+  return (percent: number | undefined) => <div>
+    <p>{vals.otherText}</p>
+    <p>{percent}</p>
+  </div>
+}
+
 export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
   const store = useStore();
 
@@ -25,7 +35,9 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
     switch (vals.chart) {
       case 'circle':
       case 'line':
-        return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} strokeWidth={vals.strokeWidth} />
+        return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} otherText={vals.otherText} strokeWidth={vals.strokeWidth} stokeColor={vals.strokeColor} />
+      case 'text':
+        return vals.value
       case 'textValue':
         return <TextValue
           key={vals.dx}

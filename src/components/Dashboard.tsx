@@ -49,7 +49,7 @@ export const Dashboard = observer(() => {
     { dx: 'QTLv7jKT6tU', label: 'Bed Capacity' },
     { dx: 'THaNba5GyJj', label: 'Beds Available', className: 'red' },
     { dx: 'oK76O9uCtEe', label: 'Admissions', className: 'red' },
-    { dx: 'v9r6qu7MAvk', chart: 'circle', showInfo: true, strokeWidth: 5 }
+    { dx: 'v9r6qu7MAvk', chart: 'circle', otherText: 'Occupancy' }
   ]);
   beds.setPeriods(['THIS_YEAR']);
   beds.setType('textValues');
@@ -58,6 +58,7 @@ export const Dashboard = observer(() => {
   testingAndContactTracing.setData({ rows: [] });
   testingAndContactTracing.setD2(store.d2);
   testingAndContactTracing.setDx([
+    { dx: 'tZ2Tfp9HjwG', label: 'RO', chart: 'circle', otherText: 'RO' },
     { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
     {
       dx: 'zkkOssLJR1m', className: 'red', label: 'Tested Positive', child: {
@@ -69,6 +70,7 @@ export const Dashboard = observer(() => {
     { dx: 'AWqQSTtuWGl', label: 'Contacts Identified' },
     {
       dx: 'Aiu4kJtREFN', label: 'Contacts Tested', child: {
+        strokeColor: '#17803A',
         dx: 'kLUxutfrUjZ',
         chart: 'line'
       }
@@ -97,20 +99,22 @@ export const Dashboard = observer(() => {
   const incidence = new Visualization();
   incidence.setD2(store.d2);
   incidence.setDx([
-    { dx: 'wAOwXzZwZhs', label: 'POEs Available' },
+    { dx: 'Eh4jODrtZBT', label: 'Incidence', color: '#1B3A50' },
   ]);
   incidence.setPeriods(['LAST_14_DAYS']);
   incidence.setType('chart');
-  incidence.setChartType('line');
+  incidence.setChartType('spline');
   incidence.setFilterByPeriods(false);
   incidence.setDimension(d1.width - 120, d1.height - 50);
 
   const dailyInfection = new Visualization();
   dailyInfection.setD2(store.d2);
   dailyInfection.setDx([
-    { dx: 'Etwx5Yv3jBp', label: 'POEs Available' },
+    { dx: 'VGnmnm4OC47', label: 'Health Workers Tested' },
+    { dx: 'mF9tVYK4jEO', label: 'Health Workers Tested Positive' },
   ]);
   dailyInfection.setPeriods(['LAST_14_DAYS']);
+  dailyInfection.setFilterByPeriods(false);
   dailyInfection.setType('chart');
   dailyInfection.setChartType('column');
   dailyInfection.setDimension(d2.width - 200, d2.height - 50)
@@ -120,8 +124,9 @@ export const Dashboard = observer(() => {
   deaths.setData({ rows: [] });
 
   deaths.setDx([
+    { dx: 'jBcRzxuNzGt', label: 'Recoveries' },
     { dx: 'D7y8pwGMsgp', label: 'Total Deaths' },
-    { dx: 'ob2qpzPpniN', label: 'Case Fatality Rates', otherText: '%' },
+    { dx: 'ob2qpzPpniN', label: 'Fatality Rates', otherText: '%' },
   ]);
   deaths.setPeriods(['THIS_YEAR']);
   deaths.setType('textValues');
@@ -132,10 +137,10 @@ export const Dashboard = observer(() => {
 
   heathWorkers.setDx([
     {
-      dx: 'Ajm4ssIgZq4', label: 'Health Workers Tested'
+      dx: 'VGnmnm4OC47', label: 'Health Workers Tested'
     },
     {
-      dx: 'Etwx5Yv3jBp', className: 'red', label: 'Positive Health Workers'
+      dx: 'mF9tVYK4jEO', className: 'red', label: 'Positive Health Workers'
     },
     {
       dx: 'omNy6QA0ptE',
@@ -150,11 +155,14 @@ export const Dashboard = observer(() => {
   travellers.setData({ rows: [] });
   travellers.setD2(store.d2);
   travellers.setDx([
-    { dx: 'Wt8gxkBiJZ8', label: 'Travellers Registered at POEs' },
-    { dx: 'BMi59SCKIFi', label: 'Travellers Tested at POEs' },
-    { dx: 'GGoxErWQ12J', label: 'Travellers Tested Positive' },
-    { dx: 'vpDs2i5Fc4r', label: 'Contacts of Travellers Tested at POEs' },
-    { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
+    // { dx: 'Wt8gxkBiJZ8', label: 'Travellers Registered at POEs' },
+    { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
+    { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
+    { dx: 'uKHils0UxEe', label: 'POEs Testing' },
+    { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
+    { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive' },
+    // { dx: 'vpDs2i5Fc4r', label: 'Contacts of Travellers Tested at POEs' },
+    // { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
   ]);
   travellers.setPeriods(['THIS_YEAR']);
   travellers.setType('textValues');
@@ -163,45 +171,52 @@ export const Dashboard = observer(() => {
   const positiveAtPOE = new Visualization();
   positiveAtPOE.setD2(store.d2);
   positiveAtPOE.setDx([
-    { dx: 'upO9ps9ItXy', label: 'POEs Available' },
+    // { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
+    { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive', color: '#AB2916' },
   ]);
   positiveAtPOE.setPeriods(['LAST_14_DAYS']);
   positiveAtPOE.setType('chart');
   positiveAtPOE.setChartType('column');
   // positiveAtPOE.setOrgUnitGroups(['aobWYizg7hR'])
+  positiveAtPOE.setFilterByPeriods(false)
   positiveAtPOE.setDimension(d3.width - 10, d3.height - 500);
 
   const testingCapacity = new Visualization();
   testingCapacity.setD2(store.d2);
   testingCapacity.setDx([
-    { dx: 'CemgWPzdnUf', label: 'Tests Done Today', type: 'column', yAxis: 1 },
-    { dx: 'zkkOssLJR1m', label: 'POEs Available', type: 'column', yAxis: 1 },
-    { dx: 'Eh4jODrtZBT', label: 'Daily Case Incidence', type: 'spline', yAxis: 2 },
+    { dx: 'aikFogLLKgR', label: 'Total Daily Testing Capacity', type: 'column', },
+    { dx: 'W6jbNXRDbEI', label: 'Tested Done Today', type: 'column', },
+    { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', },
+    { dx: 'Eh4jODrtZBT', label: 'Incidence', type: 'spline', yAxis: 1 },
   ]);
   testingCapacity.setPeriods(['LAST_14_DAYS']);
   // testingCapacity.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
   testingCapacity.setFilterByPeriods(false);
   testingCapacity.setType('multiple');
   // testingCapacity.setChartType('column');
-  testingCapacity.setDimension(d4.width - 190, d4.height - 50)
+  testingCapacity.setDimension(d4.width - 210, d4.height - 50)
 
   const testingSites = new Visualization();
   testingSites.setD2(store.d2);
   testingSites.setData({ rows: [] });
 
   testingSites.setDx([
-    { dx: 'pSaKi4mRE9N', label: 'Total Sites Established' },
+    { dx: 'ELZwQO5nmUS', label: 'Testing Sites Established' },
     {
-      dx: 'Ajm4ssIgZq4', label: 'Total Testing Capacity',
+      dx: 'aikFogLLKgR', label: 'Testing Capacity',
     },
     {
-      dx: 'Etwx5Yv3jBp', className: 'red', label: 'Total Tests Today', child: {
+      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Today', child: {
         dx: 'kLUxutfrUjZ',
-        chart: 'line'
+        chart: 'line',
+        strokeColor: '#17803A',
       }
     },
+    {
+      dx: 'oNWIFSlbOyL', label: 'Positive Today',
+    },
   ]);
-  testingSites.setPeriods(['THIS_YEAR']);
+  testingSites.setPeriods(['TODAY']);
   testingSites.setType('textValues');
 
   return (
@@ -219,14 +234,14 @@ export const Dashboard = observer(() => {
           xxs: 0,
         }}
         cols={{ xxl: 12, lg: 12, md: 9, sm: 1, xs: 1, xxs: 1 }}
-        rowHeight={66}
+        rowHeight={70}
       >
         <div
           style={{ background: '#F4F4F4', height: '100%' }}
           key="2"
           ref={c22}
           data-grid={{
-            w: 6,
+            w: 8,
             h: 2,
             x: 0,
             y: 0,
@@ -236,7 +251,7 @@ export const Dashboard = observer(() => {
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
             <span style={{ marginLeft: 10 }}>Testing and Contact Tracing</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30, textAlign: 'center', }}>
             {display(testingAndContactTracing)}
           </div>
         </div>
@@ -246,9 +261,9 @@ export const Dashboard = observer(() => {
           key="1"
           ref={c11}
           data-grid={{
-            w: 3,
+            w: 4,
             h: 2,
-            x: 6,
+            x: 8,
             y: 0,
             static: process.env.NODE_ENV === "production",
           }}
@@ -256,11 +271,11 @@ export const Dashboard = observer(() => {
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
             <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', height: d11.height ? d11.height - 38 : 30 }}>
-            {display(testingSites)}
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d11.height ? d11.height - 38 : 30 }}>
+            {display(beds)}
           </div>
         </div>
-        <div
+        {/* <div
           style={{ display: 'flex', flexDirection: 'column', background: '#F4F4F4' }}
           key="3"
           ref={c33}
@@ -278,7 +293,7 @@ export const Dashboard = observer(() => {
           <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d33.height ? d33.height - 38 : 30 }}>
             {display(poes)}
           </div>
-        </div>
+        </div> */}
 
         <div
           key="4"
@@ -330,18 +345,18 @@ export const Dashboard = observer(() => {
           ref={c3}
           data-grid={{
             w: 3,
-            h: 12,
+            h: 11,
             x: 9,
             y: 2,
             static: process.env.NODE_ENV === "production",
           }}
         >
           <div style={{ background: '#d8d8d8', minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
-            <span style={{ marginLeft: 10 }}>Travels and Testing</span>
+            <span style={{ marginLeft: 10 }}>POE Screening and Testing</span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
-            <div style={{ margin: 5, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
+            <div style={{ margin: 5, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: 500 }}>
               {display(travellers)}
             </div>
             <div style={{ padding: 5 }}>{display(positiveAtPOE)}</div>
@@ -353,7 +368,7 @@ export const Dashboard = observer(() => {
           ref={c4}
           data-grid={{
             w: 9,
-            h: 7,
+            h: 6,
             x: 0,
             y: 7,
             static: process.env.NODE_ENV === "production",
@@ -363,10 +378,10 @@ export const Dashboard = observer(() => {
             <span style={{ marginLeft: 10 }}>Testing Sites and Capacity</span>
           </div>
           <div style={{ display: 'flex' }}>
-            <div style={{ margin: 5, height: d4.height ? d4.height - 50 : '', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-              {display(testingAndContactTracing)}
+            <div style={{ margin: 5, height: d4.height ? d4.height - 50 : '', width: 210, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+              {display(testingSites)}
             </div>
-            <div style={{ padding: 5 }}>{display(testingCapacity)}</div>
+            <div style={{ padding: 5, alignItems: 'center' }}>{display(testingCapacity)}</div>
           </div>
         </div>
       </ResponsiveGridLayout>
