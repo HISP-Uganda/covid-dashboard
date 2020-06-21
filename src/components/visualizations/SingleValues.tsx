@@ -35,7 +35,7 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
     switch (vals.chart) {
       case 'circle':
       case 'line':
-        return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} otherText={vals.otherText} strokeWidth={vals.strokeWidth} stokeColor={vals.strokeColor} />
+        return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} otherText={vals.otherText} strokeWidth={vals.strokeWidth} stokeColor={vals.strokeColor} trailColor={vals.trailColor} textColor={vals.textColor} />
       case 'text':
         return vals.value
       case 'textValue':
@@ -44,6 +44,7 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
           label={vals.label}
           value={vals.value}
           className={vals.className}
+          labelClassName={vals.labelClassName}
           otherText={vals.otherText}
         />
       default:
@@ -52,6 +53,7 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
           label={vals.label}
           value={vals.value}
           className={vals.className}
+          labelClassName={vals.labelClassName}
           otherText={vals.otherText}
         />
     }

@@ -1,7 +1,7 @@
 import { observable, action, computed } from "mobx";
 import { generateUid } from "../utils/uid";
 import { fromPairs, flatten } from 'lodash'
-import Highcharts, { color } from "highcharts";
+import Highcharts from "highcharts";
 
 export class Visualization {
   @observable height: number = 0;
@@ -21,9 +21,11 @@ export class Visualization {
   @observable yAxis: string = "";
   @observable loading: boolean = false;
   @observable cssClass = "";
+  @observable labelClassName = "";
+  @observable chartBackground: string = '';
   @observable editable: boolean = process.env.NODE_ENV === "development";
 
-  @observable dx: any = [];
+  @observable dx: any = {};
   @observable periods: string[] = [];
   @observable ou: string[] = [];
   @observable filterByOus: boolean = true;
@@ -46,8 +48,10 @@ export class Visualization {
   @action setXAxis = (val: string) => (this.xAxis = val);
   @action setD2 = (val: any) => (this.d2 = val);
   @action setCssClass = (val: any) => (this.cssClass = val);
+  @action setLabelClassName = (val: any) => (this.labelClassName = val);
   @action setMetadata = (val: any) => (this.metadata = val);
   @action setOrgUnitGroups = (val: any) => this.orgUnitGroups = val;
+  @action changeChartBackground = (val: any) => this.chartBackground = val;
   @action setDimension = (width: number, height: number) => {
     this.width = width;
     this.height = height;
@@ -73,7 +77,6 @@ export class Visualization {
   @action fetchFromAnalytics = async () => {
     if (this.orgUnitGroups.length > 0) {
       await this.loadOrgUnitGroups();
-      console.log(this.orgUnitGroups.length)
     }
     if (this.chartType !== "map") {
       this.setLoading(true);
@@ -150,6 +153,24 @@ export class Visualization {
     this.setLoading(false);
   };
 
+  @action changeDxClass = (object: any = {}) => {
+    const tsDx = this.dx.map(({ child: c, ...d }: any) => {
+
+      const current = object[d.dx];
+
+      if (current) {
+        const { child, ...rest }: any = current
+        if (child) {
+          c = { ...c, ...child }
+        }
+        return { ...d, ...rest, child: c }
+      }
+
+      return d;
+    });
+    this.setDx(tsDx);
+  }
+
   @computed
   get chart() {
     // console.log(this.type);
@@ -165,7 +186,11 @@ export class Visualization {
         subtitle: {
           text: `<span>${this.subtitle}</span>`,
         },
-        colors: ['#484848', '#AB2916']
+        colors: ['#484848', 'orangered'],
+        legend: {
+          backgroundColor: 'yellow'
+        },
+
       };
 
 
@@ -173,6 +198,7 @@ export class Visualization {
       let chart: any = {
         height: this.height,
         width: this.width,
+        backgroundColor: this.chartBackground
       };
       let plotOptions = {};
       let tooltip: any = {};
@@ -225,6 +251,11 @@ export class Visualization {
         xAxis = {
           categories,
           crosshair: true,
+          labels: {
+            style: {
+              color: 'white'
+            }
+          }
         };
         fullChart = {
           ...fullChart,
@@ -311,6 +342,11 @@ export class Visualization {
         xAxis = {
           categories,
           crosshair: true,
+          labels: {
+            style: {
+              color: 'white'
+            }
+          }
         };
 
         fullChart = {
@@ -377,7 +413,6 @@ export class Visualization {
           });
         }
 
-        const colors = Highcharts.getOptions().colors || [];
         const series = this.dx.map((d: any) => {
           let data;
           if (!this.filterByOus) {
@@ -412,47 +447,67 @@ export class Visualization {
           if (d.yAxis) {
             result = { ...result, yAxis: d.yAxis }
           }
+          if (d.color) {
+            result = { ...result, color: d.color }
+          }
+
+          if (d.lineWidth) {
+            result = { ...result, lineWidth: d.lineWidth }
+          }
           return result;
         });
 
         return {
           title: {
-            text: `<span style="font-size: 20px;font-weight:bolder">Daily Test Summary</span>`,
+            text: `<span style="font-size: 16px;font-weight:bolder;color:white; ">Daily Test Summary</span>`,
           },
           chart: {
             zoomType: 'xy',
             height: this.height,
             width: this.width,
+            backgroundColor: this.chartBackground
           },
-          colors: ['#484848', '#AB2916', '#1B3A50'],
           xAxis: [{
             categories,
-            crosshair: true
+            crosshair: true,
+            labels: {
+              style: {
+                color: 'white'
+              }
+            }
           }],
+          credits: { enabled: false },
+          plotOptions: {
+            series: {
+              pointPadding: 0,
+              groupPadding: 0,
+              borderWidth: 0
+            }
+          },
           yAxis: [{ // Primary yAxis
             labels: {
               format: '{value}',
               style: {
-                color: colors[1]
+                color: this.dx[0].color
               }
             },
             title: {
               text: 'Number',
               style: {
-                color: colors[1]
+                color: this.dx[0].color
               }
             }
           }, { // Secondary yAxis
             title: {
-              text: 'Incidence',
+              text: 'Cumulative Daily Cases',
               style: {
-                color: colors[0]
+                color: this.dx[1].color
               }
             },
             labels: {
               format: '{value}',
               style: {
-                color: colors[0]
+                color: this.dx[1].color
               }
             },
             opposite: true
@@ -460,15 +515,9 @@ export class Visualization {
           tooltip: {
             shared: true
           },
-          // legend: {
-          // layout: 'vertical',
-          // align: 'left',
-          // x: 120,
-          // verticalAlign: 'top',
-          // y: 100,
-          // floating: true,
-          // backgroundColor: legend.backgroundColor || 'rgba(255,255,255,0.25)'
-          // },
+          legend: {
+            backgroundColor: 'yellow'
+          },
           series
         }
       }
@@ -492,7 +541,11 @@ export class Visualization {
               chart: d.child.chart,
               strokeWidth: d.child.strokeWidth,
               otherText: d.child.otherText,
-              strokeColor: d.child.strokeColor
+              trailColor: d.child.trailColor,
+              textColor: d.child.textColor,
+              strokeColor: d.child.strokeColor,
+              className: d.child.className,
+              labelClassName: d.child.labelClassName,
             }
           }
 
@@ -501,9 +554,12 @@ export class Visualization {
             dx: d.dx,
             showInfo: d.showInfo,
             strokeWidth: d.strokeWidth,
+            textColor: d.textColor,
+            trailColor: d.trailColor,
             strokeColor: d.strokeColor,
             otherText: d.otherText,
             className: d.className,
+            labelClassName: d.labelClassName,
             value: searchedNum ? Number(Number(searchedNum[1]).toFixed(1)).toLocaleString() : '0',
             chart: d.chart,
             child

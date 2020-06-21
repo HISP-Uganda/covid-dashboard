@@ -8,13 +8,14 @@ interface SingleValuesProps {
   stokeColor?: string;
   trailColor?: string;
   otherText?: string;
+  textColor?: string;
   format?: (percent: number | undefined, successPercent?: number | undefined) => React.ReactNode
 }
 
-export const ProgressValue: FC<SingleValuesProps> = ({ value, chart, showInfo = true, strokeWidth = 8, stokeColor = '#AB3D3D', trailColor = "gray", format = (percent: number | undefined) => percent + '%', otherText }) => {
+export const ProgressValue: FC<SingleValuesProps> = ({ value, chart, showInfo = true, strokeWidth = 8, textColor, stokeColor = '#AB3D3D', trailColor = "gray", format = (percent: number | undefined) => <span style={{ color: textColor }}>{percent + '%'}</span>, otherText }) => {
   if (otherText) {
     return <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ margin: 0, padding: 0 }}>{otherText}</div>
+      <div style={{ margin: 0, padding: 0, color: textColor }}>{otherText}</div>
       <Progress
         strokeWidth={strokeWidth}
         showInfo={showInfo}

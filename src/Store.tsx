@@ -7,8 +7,10 @@ class Store {
   @observable d2: any;
   @observable userOrgUnits: any = [];
   @observable selectedOrgUnit: any;
+  @observable isLight: boolean = false;
 
   @action setD2 = async (d2: any) => (this.d2 = d2);
+  @action setIsLight = (val: boolean) => this.isLight = val;
 
   @action
   loadUserOrgUnits = async () => {
@@ -67,6 +69,26 @@ class Store {
       };
     });
     return units;
+  }
+
+  @computed get currentBackgrounds() {
+    if (!this.isLight) {
+      return {
+        background: '#1A223A',
+        cardBG: '#272E48',
+        header: '',
+        indicatorLabel: '#bdd1f8',
+        headerColor: 'white'
+
+      }
+    }
+
+    return {
+      background: '',
+      cardBG: '#F4F4F4',
+      header: '#d8d8d8',
+      headerColor: ''
+    }
   }
 }
 

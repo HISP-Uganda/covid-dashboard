@@ -11,15 +11,16 @@ import {
   HashRouter as Router,
   Switch,
   Route,
-  // Link,
-  Redirect,
+  Link,
+  // Redirect,
 } from "react-router-dom";
-import { Layout } from "antd";
+import { Layout, Menu, Switch as ASwitch } from "antd";
 import logo from "./images/image.png";
 import { Covid19 } from "./components/Covid19";
 
 import "./App.css";
 import "./index.css";
+import { Dashboard } from "./components/Dashboard";
 
 const config = {
   baseUrl: process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080/api",
@@ -50,6 +51,16 @@ const initialize = async () => {
               <span style={{ marginBottom: -10, marginTop: 0, fontSize: 28 }}>Ministry of Health</span>
               <span style={{ marginTop: -24, fontWeight: 'lighter', fontSize: 20 }}>COVID-19 Monitoring Dashboard </span>
             </div>
+
+            {/* <div style={{ marginLeft: 'auto' }}><ASwitch onChange={store.setIsLight} checked={store.isLight} /></div> */}
+            <Menu mode="horizontal" defaultSelectedKeys={["cases"]} style={{ marginLeft: 'auto' }}>
+              <Menu.Item key="cases" style={{ textTransform: "uppercase", fontWeight: 'lighter' }}>
+                <Link to={`/`}>Dashboard</Link>
+              </Menu.Item>
+              <Menu.Item key="treatment" style={{ textTransform: "uppercase", fontWeight: 'lighter' }}>
+                <Link to={`/summary`}>Summary Status</Link>
+              </Menu.Item>
+            </Menu>
           </Header>
           <hr style={{ margin: 0, border: '1px solid black' }} />
           <hr style={{ margin: 0, border: '1px solid yellow' }} />
@@ -59,9 +70,10 @@ const initialize = async () => {
               <Covid19 />
             </Route>
             <Route exact path="/">
-              <Redirect to="/covid-19" />
+              <Dashboard />
             </Route>
           </Switch>
+          <div style={{ background: '#D8D8D8', padding: 10, textAlign: 'right' }}>HISP Uganda</div>
         </div>
       </Router>
     </StoreContext.Provider>,

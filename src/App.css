@@ -19,43 +19,54 @@
 
   color: black;
 }
-/* .modified-item:hover {
-  border-bottom: 2px solid yellow !important;
-  color: inherit !important;
-}
-.modified-item:focus {
-  border-bottom: 2px solid yellow !important;
-  color: inherit !important;
-} */
 
-/* :host ::ng-deep .ant-menu.ant-menu-light .ant-menu-item-selected {
-  border-bottom-color: #4a235a;
-} */
 .red {
-  color: #AB2916;
+  color: #ab2916;
   font-size: 28px;
   font-family: Arial;
 }
 
-.green{
-  background: #17803A;
+.red-dark {
+  color: orangered;
+  font-size: 28px;
+  font-family: Arial;
+}
+
+.white {
+  color: #f1f7fb;
+  font-size: 28px;
+  font-family: Arial;
+}
+
+.green {
+  background: #17803a;
+}
+
+.green-dark {
+  color: #20c997;
+}
+
+.indicator-label {
+  color: #bdd1f8;
+  font-size: large;
+  /* margin-top: 10px; */
+}
+
+.indicator-progress {
+  color: #a3afbd;
+  font-size: 28px;
+  font-family: Arial;
 }
 
 .blue {
-  color: #1B3A50;
+  color: #1b3a50;
   font-size: 28px;
   font-family: Arial;
 }
 
 .management {
-  color: #ff0000;
+  color: greenyellow;
   font-size: 48px;
-  font-family: Arial;
-}
-
-.green {
-  color: green;
-  font-size: 28px;
   font-family: Arial;
 }
 
