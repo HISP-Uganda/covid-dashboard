@@ -9,23 +9,17 @@ interface SingleValuesProps {
   element: TItem;
 }
 
-const getFormat = (vals: any) => {
-  if (!vals.otherText) {
-    return (percent: number | undefined) => percent + '%'
-  }
-  return (percent: number | undefined) => <div>
-    <p>{vals.otherText}</p>
-    <p>{percent}</p>
-  </div>
-}
-
 export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
   const store = useStore();
 
   useEffect(() => {
     element.setOu([store.selectedOrgUnit]);
     element.fetchFromAnalytics();
-  }, [element, store.selectedOrgUnit]);
+    setInterval(() => {
+      element.setOu([store.selectedOrgUnit]);
+      element.fetchFromAnalytics(false);
+    }, store.refreshRate)
+  }, [element, store.selectedOrgUnit, store.refreshRate]);
 
   if (element.loading) {
     return <div>Loading...</div>;

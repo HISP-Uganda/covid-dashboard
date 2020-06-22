@@ -8,10 +8,30 @@ import { TItem, Visualization } from "../models/Visualization";
 import { Chart } from "./visualizations/Chart";
 import { Map } from "./visualizations/Map";
 import { SingleValues } from "./visualizations/SingleValues";
-import Marquee from "react-marquee-slider";
+import dayjs from 'dayjs';
+import { TVValues } from "./visualizations/TVValues";
+
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 // const { Option } = Select;
+
+export const enumerateDates = (startDate: string) => {
+  const start = dayjs(startDate).toDate();
+  const lastDate = dayjs().toDate();
+
+  const year = start.getFullYear();
+  const month = start.getMonth();
+  let day = start.getDate();
+  const dates = [start];
+
+  while (dates[dates.length - 1] < lastDate) {
+    dates.push(new Date(year, month, ++day));
+  }
+
+  return dates.map((d: Date) => {
+    return dayjs(d).format('YYYYMMDD')
+  });
+};
 
 export const Dashboard = observer(() => {
   const store = useStore();
@@ -32,6 +52,7 @@ export const Dashboard = observer(() => {
   const redDarkProgress = { strokeColor: '#ff5b5c', trailColor: '#fffbe9', textColor: '#f1f7fb' }
 
 
+
   const display = (element: TItem) => {
     switch (element.type) {
       case "chart":
@@ -48,6 +69,14 @@ export const Dashboard = observer(() => {
         return <SingleValues element={element} />;
     }
   };
+
+  const displayTv = (element: TItem) => {
+    return Object.values(element.chart).map((obj: any) => {
+      return <div key={obj.dx}>
+        <span>{obj.label}</span><span>{obj.value}</span>
+      </div>
+    })
+  }
 
   const beds = new Visualization();
   beds.setData({ rows: [] });
@@ -196,7 +225,7 @@ export const Dashboard = observer(() => {
     { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', color: '#96C5FF' },
     { dx: 'YUdNyrF8iYp', label: 'Cumulative Daily Cases', type: 'spline', yAxis: 1, color: 'orange', lineWidth: 4 },
   ]);
-  caseIncidence.setPeriods(['LAST_14_DAYS']);
+  caseIncidence.setPeriods(enumerateDates('2020-03-01'));
   // caseIncidence.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
   caseIncidence.setFilterByPeriods(false);
   caseIncidence.setType('multiple');
@@ -345,7 +374,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header, color: store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Testing and Contact Tracing</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30, textAlign: 'center', alignItems: 'center' }}>
@@ -365,7 +394,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header, color: store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d11.height ? d11.height - 38 : 30 }}>
@@ -384,7 +413,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header,color:store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div style={{ background: store.currentBackgrounds.header,color:store.currentBackgrounds.headerColor }}>
             <span style={{ marginLeft: 10 }}>Point of Entries(POEs)</span>
           </div>  
           <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d33.height ? d33.height - 38 : 30 }}>
@@ -404,7 +433,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header, color: store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Case Incidence</span>
           </div>
           <div style={{ display: 'flex' }}>
@@ -427,7 +456,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header, color: store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>POE Screening and Testing</span>
           </div>
 
@@ -450,7 +479,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header, color: store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Testing Sites and Capacity</span>
           </div>
           <div style={{ display: 'flex' }}>
@@ -473,7 +502,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <div style={{ background: store.currentBackgrounds.header, color: store.currentBackgrounds.headerColor, minHeight: 38, maxHeight: 38, display: 'flex', alignItems: 'center' }}>
+          <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Health Worker Infections</span>
           </div>
           <div style={{ display: 'flex' }}>
@@ -497,9 +526,7 @@ export const Dashboard = observer(() => {
             static: process.env.NODE_ENV === "production",
           }}
         >
-          <Marquee velocity={36} direction="rtl" debug={false} onFinish={() => { console.log('Finished') }} resetAfterTries={200} scatterRandomly={false} >
-            {[<div key={testingAndContactTracing.i} style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30, textAlign: 'center', alignItems: 'center' }}>{display(testingAndContactTracing)}</div>]}
-          </Marquee>
+          <TVValues element={travellers} />
         </div>
 
       </ResponsiveGridLayout>

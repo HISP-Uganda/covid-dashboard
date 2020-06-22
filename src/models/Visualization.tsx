@@ -74,11 +74,11 @@ export class Visualization {
     this.w = w;
     this.h = h;
   };
-  @action fetchFromAnalytics = async () => {
+  @action fetchFromAnalytics = async (loading: boolean = true) => {
     if (this.orgUnitGroups.length > 0) {
       await this.loadOrgUnitGroups();
     }
-    if (this.chartType !== "map") {
+    if (loading) {
       this.setLoading(true);
     }
     if (this.dx.length > 0 && this.periods.length > 0 && this.ou.length > 0) {
@@ -108,7 +108,7 @@ export class Visualization {
       }
       this.setData(data);
     }
-    if (this.chartType !== "map") {
+    if (loading) {
       this.setLoading(false);
     }
   };
