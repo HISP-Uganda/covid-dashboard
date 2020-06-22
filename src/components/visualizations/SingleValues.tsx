@@ -4,6 +4,7 @@ import { TextValue } from "./TextValue";
 import { TItem } from "../../models/Visualization";
 import { useStore } from "../../Context";
 import { ProgressValue } from "./ProgressValue";
+import { Spinner } from '../Spinner'
 
 interface SingleValuesProps {
   element: TItem;
@@ -22,7 +23,7 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
   }, [element, store.selectedOrgUnit, store.refreshRate]);
 
   if (element.loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   const display = (vals: any) => {

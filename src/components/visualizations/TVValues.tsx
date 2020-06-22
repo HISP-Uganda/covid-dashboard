@@ -3,6 +3,8 @@ import { observer } from "mobx-react";
 import { TItem } from "../../models/Visualization";
 import { useStore } from "../../Context";
 import Marquee from "react-marquee-slider";
+import { Spinner } from '../Spinner'
+
 
 
 interface SingleValuesProps {
@@ -22,19 +24,21 @@ export const TVValues: FC<SingleValuesProps> = observer(({ element }) => {
   }, [element, store.selectedOrgUnit, store.refreshRate]);
 
   if (element.loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
 
   return (
-    <Marquee velocity={72} direction="rtl" debug={false} onFinish={() => { console.log('Finished') }} resetAfterTries={200} scatterRandomly={false} >
-      {Object.values(element.chart).map((value: any, i: number) => (
-        <div key={value.dx} style={{ fontSize: 36, marginLeft: 20, marginRight: 20 }}>
-          <span style={{ marginRight: 8 }}>{value.label}</span>
-          <span style={{ color: '#1b3a50', fontWeight: 'bolder' }}>{value.value}</span>
-        </div>
-      ))}
-    </Marquee>
+    <div>
+      <Marquee velocity={72} direction="rtl" debug={false} onFinish={() => { console.log('Finished') }} resetAfterTries={200} scatterRandomly={false} >
+        {Object.values(element.chart).map((value: any, i: number) => (
+          <div key={value.dx} style={{ fontSize: 28, marginLeft: 20, marginRight: 20 }}>
+            <span style={{ marginRight: 8 }}>{value.label}</span>
+            <span style={{ color: '#1b3a50', fontWeight: 'bolder' }}>{value.value}</span>
+          </div>
+        ))}
+      </Marquee>
+    </div>
 
   );
 });

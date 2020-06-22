@@ -188,7 +188,7 @@ export class Visualization {
         },
         colors: ['#484848', 'orangered'],
         legend: {
-          backgroundColor: 'yellow'
+          backgroundColor: '#EBEFF9'
         },
 
       };
@@ -516,7 +516,7 @@ export class Visualization {
             shared: true
           },
           legend: {
-            backgroundColor: 'yellow'
+            backgroundColor: '#EBEFF9'
           },
           series
         }

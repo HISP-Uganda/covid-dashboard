@@ -6,6 +6,8 @@ import accessibility from 'highcharts/modules/accessibility'
 import { observer } from "mobx-react";
 import { TItem } from "../../models/Visualization";
 import { useStore } from "../../Context";
+import { Spinner } from '../Spinner'
+
 
 accessibility(Highcharts);
 
@@ -27,7 +29,7 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
   }, [element, store.selectedOrgUnit, store.isLight, store.refreshRate]);
 
   if (element.loading || !element.chart) {
-    return <div>Loading...</div>;
+    return <Spinner/>;
   }
 
   return <HighchartsReact highcharts={Highcharts} options={element.chart} />;

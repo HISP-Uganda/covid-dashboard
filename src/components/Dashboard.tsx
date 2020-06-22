@@ -515,7 +515,7 @@ export const Dashboard = observer(() => {
 
 
         <div
-          style={{ background: '#fffbe9', height: '100%' }}
+          style={{ background: '#fffbe9', display: 'flex', alignContent: 'center', alignItems: 'center' }}
           key="8"
           ref={c33}
           data-grid={{
