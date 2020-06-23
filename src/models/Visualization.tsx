@@ -172,7 +172,6 @@ export class Visualization {
 
   @computed
   get chart() {
-    // console.log(this.type);
     if (this.type === "chart") {
       let xAxis = {};
       let series: any[] = [];

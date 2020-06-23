@@ -27,10 +27,8 @@ export const enumerateDates = (startDate: string) => {
 
 
   while (dates[dates.length - 1] < lastDate) {
-    console.log(day)
     dates.push(new Date(year, month, day++));
   }
-  console.log(dates);
   return dates.map((d: Date) => {
     return dayjs(d).format('YYYYMMDD')
   });
@@ -482,8 +480,6 @@ export const Dashboard = observer(() => {
           </div>
         </div>
 
-
-        
         <div
           style={{ background: store.currentBackgrounds.cardBG }}
           key="6"

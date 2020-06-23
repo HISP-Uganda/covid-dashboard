@@ -174,3 +174,19 @@
   align-items: center;
   color: white;
 }
+
+.modified-item:hover {
+  border-bottom: none !important;
+}
+.modified-item:focus {
+  border-bottom: none !important;
+  background: none !important;
+}
+
+.modified-item:enabled {
+  background: none !important;
+}
+
+.ant-menu-item-selected {
+  background-color: red;
+}
