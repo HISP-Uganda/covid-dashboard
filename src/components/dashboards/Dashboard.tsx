@@ -1,4 +1,5 @@
 // import { Select } from "antd";
+import dayjs from 'dayjs';
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
@@ -8,7 +9,6 @@ import { TItem, Visualization } from "../../models/Visualization";
 import { Chart } from "../visualizations/Chart";
 import { Map } from "../visualizations/Map";
 import { SingleValues } from "../visualizations/SingleValues";
-import dayjs from 'dayjs';
 import { TVValues } from "../visualizations/TVValues";
 
 
@@ -44,8 +44,8 @@ export const Dashboard = observer(() => {
   const [c11, d11] = useDimensions({ liveMeasure: false });
   const [c22, d22] = useDimensions({ liveMeasure: false });
   const [c33] = useDimensions({ liveMeasure: false });
-  const [c44] = useDimensions({ liveMeasure: false });
-  const [c55] = useDimensions({ liveMeasure: false });
+  // const [c44] = useDimensions({ liveMeasure: false });
+  // const [c55] = useDimensions({ liveMeasure: false });
 
   const black = { className: 'white', labelClassName: 'indicator-label' };
   const redDark = { className: 'red-dark', labelClassName: 'indicator-label' };

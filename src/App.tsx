@@ -1,5 +1,5 @@
-import { SettingOutlined } from '@ant-design/icons';
-import { Dropdown, Layout, Menu, Switch as ASwitch } from "antd";
+import { Layout, Menu, Switch as ASwitch } from "antd";
+import { observer } from 'mobx-react';
 import "mobx-react-lite/batchingForReactDom";
 import React from "react";
 import "react-grid-layout/css/styles.css";
@@ -17,11 +17,10 @@ import { ICT } from "./components/dashboards/ICT";
 import { Logistics } from "./components/dashboards/Logistics";
 import { Risk } from "./components/dashboards/Risk";
 import { Surveillance } from "./components/dashboards/Surveillance";
+import { Settings } from './components/Settings';
+import { useStore } from './Context';
 import logo from "./images/image.png";
 import "./index.css";
-import { observer } from 'mobx-react';
-import { useStore } from './Context';
-import { Settings } from './components/Settings';
 
 const { Header } = Layout;
 const { SubMenu } = Menu;
@@ -29,28 +28,6 @@ const { SubMenu } = Menu;
 export const App = observer(() => {
 
   const store = useStore();
-
-  const menu = (
-    <Menu>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
-          1st menu item
-        </a>
-      </Menu.Item>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
-          2nd menu item
-        </a>
-      </Menu.Item>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
-          3rd menu item
-        </a>
-      </Menu.Item>
-      {/* <Menu.Item danger>a danger item</Menu.Item> */}
-    </Menu>
-  );
-
   return <Router>
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: '1 0 auto' }}>
