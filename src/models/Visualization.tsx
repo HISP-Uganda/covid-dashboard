@@ -1,7 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { generateUid } from "../utils/uid";
 import { fromPairs, flatten } from 'lodash'
-import Highcharts from "highcharts";
 
 export class Visualization {
   @observable height: number = 0;
@@ -186,7 +185,7 @@ export class Visualization {
         subtitle: {
           text: `<span>${this.subtitle}</span>`,
         },
-        colors: ['#484848', 'orangered'],
+        colors: ['#7798BF', 'orangered'],
         legend: {
           backgroundColor: '#EBEFF9'
         },
@@ -458,9 +457,9 @@ export class Visualization {
         });
 
         return {
-          title: {
-            text: `<span style="font-size: 16px;font-weight:bolder;color:white; ">Daily Test Summary</span>`,
-          },
+          // title: {
+          //   text: `<span style="font-size: 16px;font-weight:bolder;color:white; ">Daily Test Summary</span>`,
+          // },
           chart: {
             zoomType: 'xy',
             height: this.height,
@@ -546,6 +545,7 @@ export class Visualization {
               strokeColor: d.child.strokeColor,
               className: d.child.className,
               labelClassName: d.child.labelClassName,
+              removePercentage:d.child.removePercentage
             }
           }
 
@@ -562,7 +562,8 @@ export class Visualization {
             labelClassName: d.labelClassName,
             value: searchedNum ? Number(Number(searchedNum[1]).toFixed(1)).toLocaleString() : '0',
             chart: d.chart,
-            child
+            child,
+            removePercentage:d.removePercentage
           }]
         });
         return fromPairs(dxes);

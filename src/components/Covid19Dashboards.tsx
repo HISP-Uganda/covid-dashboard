@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import { useStore } from "../Context";
 import { OrgUnitTree } from "./OrgUnitTree";
 import { LeftHeader } from "./visualizations/LeftHeader";
-import { Dashboard } from "./Dashboard";
+import { Dashboard } from "./dashboards/Dashboard";
 
 export const Covid19Dashboards = observer(() => {
   const { dashboard } = useParams();

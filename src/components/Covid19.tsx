@@ -3,7 +3,7 @@ import { Menu, Switch as ASwitch } from "antd";
 import { Switch, Route, useRouteMatch, Link, Redirect } from "react-router-dom";
 import { observer } from "mobx-react";
 import { useStore } from "../Context";
-import { Dashboard } from "./Dashboard";
+import { Dashboard } from "./dashboards/Dashboard";
 
 export const Covid19 = observer(() => {
   const store = useStore()

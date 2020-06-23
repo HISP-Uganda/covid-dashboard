@@ -3,17 +3,18 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import useDimensions from "react-use-dimensions";
-import { useStore } from "../Context";
-import { TItem, Visualization } from "../models/Visualization";
-import { Chart } from "./visualizations/Chart";
-import { Map } from "./visualizations/Map";
-import { SingleValues } from "./visualizations/SingleValues";
+import { useStore } from "../../Context";
+import { TItem, Visualization } from "../../models/Visualization";
+import { Chart } from "../visualizations/Chart";
+import { Map } from "../visualizations/Map";
+import { SingleValues } from "../visualizations/SingleValues";
 import dayjs from 'dayjs';
-import { TVValues } from "./visualizations/TVValues";
+import { TVValues } from "../visualizations/TVValues";
 
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 // const { Option } = Select;
+
 
 export const enumerateDates = (startDate: string) => {
   const start = dayjs(startDate).toDate();
@@ -22,12 +23,14 @@ export const enumerateDates = (startDate: string) => {
   const year = start.getFullYear();
   const month = start.getMonth();
   let day = start.getDate();
-  const dates = [start];
+  const dates: Date[] = [start];
+
 
   while (dates[dates.length - 1] < lastDate) {
-    dates.push(new Date(year, month, ++day));
+    console.log(day)
+    dates.push(new Date(year, month, day++));
   }
-
+  console.log(dates);
   return dates.map((d: Date) => {
     return dayjs(d).format('YYYYMMDD')
   });
@@ -42,7 +45,9 @@ export const Dashboard = observer(() => {
 
   const [c11, d11] = useDimensions({ liveMeasure: false });
   const [c22, d22] = useDimensions({ liveMeasure: false });
-  const [c33, d33] = useDimensions({ liveMeasure: false });
+  const [c33] = useDimensions({ liveMeasure: false });
+  const [c44] = useDimensions({ liveMeasure: false });
+  const [c55] = useDimensions({ liveMeasure: false });
 
   const black = { className: 'white', labelClassName: 'indicator-label' };
   const redDark = { className: 'red-dark', labelClassName: 'indicator-label' };
@@ -69,14 +74,6 @@ export const Dashboard = observer(() => {
         return <SingleValues element={element} />;
     }
   };
-
-  const displayTv = (element: TItem) => {
-    return Object.values(element.chart).map((obj: any) => {
-      return <div key={obj.dx}>
-        <span>{obj.label}</span><span>{obj.value}</span>
-      </div>
-    })
-  }
 
   const beds = new Visualization();
   beds.setData({ rows: [] });
@@ -115,7 +112,7 @@ export const Dashboard = observer(() => {
         chart: 'line'
       }
     },
-    { dx: 'tZ2Tfp9HjwG', label: 'RO', chart: 'circle', otherText: 'RO' },
+    { dx: 'tZ2Tfp9HjwG', label: 'RO', chart: 'circle', otherText: 'RO', removePercentage: true },
 
   ]);
   testingAndContactTracing.setPeriods(['THIS_YEAR']);
@@ -195,8 +192,8 @@ export const Dashboard = observer(() => {
     { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
     { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
     { dx: 'uKHils0UxEe', label: 'POEs Testing' },
-    { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
-    { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive' },
+    { dx: 'BM25rsG76xg', label: 'Tested at POEs' },
+    { dx: 'wAOwXzZwZhs', label: 'Tested Positive at POEs' },
     // { dx: 'vpDs2i5Fc4r', label: 'Contacts of Travellers Tested at POEs' },
     // { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
   ]);
@@ -204,11 +201,28 @@ export const Dashboard = observer(() => {
   travellers.setType('textValues');
 
 
+  const quarantine = new Visualization();
+  quarantine.setData({ rows: [] });
+  quarantine.setD2(store.d2);
+  quarantine.setDx([
+    // { dx: 'Wt8gxkBiJZ8', label: 'quarantine Registered at POEs' },
+    { dx: 'Gxkl04U3CNh', label: 'Quarantine Centers' },
+    { dx: 'lxZ5cSmC9p1', label: 'Total Quarantined' },
+    { dx: 'YOtibrmhr2c', label: 'Quarantined and Tested' },
+    { dx: 'udVNN3ErO9q', label: 'Quarantined and Tested Positive' },
+    // { dx: 'wAOwXzZwZhs', label: 'Tested Positive at POEs' },
+    // { dx: 'vpDs2i5Fc4r', label: 'Contacts of quarantine Tested at POEs' },
+    // { dx: 'z1cgvbudBq6', label: 'Contacts of quarantine Tested Positive' },
+  ]);
+  quarantine.setPeriods(['THIS_YEAR']);
+  quarantine.setType('textValues');
+
+
   const positiveAtPOE = new Visualization();
   positiveAtPOE.setD2(store.d2);
   positiveAtPOE.setDx([
     // { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
-    { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive', color: '#AB2916' },
+    { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive', color: '#7798BF' },
   ]);
   positiveAtPOE.setPeriods(['LAST_14_DAYS']);
   positiveAtPOE.setType('chart');
@@ -216,6 +230,20 @@ export const Dashboard = observer(() => {
   // positiveAtPOE.setOrgUnitGroups(['aobWYizg7hR'])
   positiveAtPOE.setFilterByPeriods(false)
   positiveAtPOE.setDimension(d3.width - 10, d3.height - 500);
+
+
+  const positiveAtQuarantine = new Visualization();
+  positiveAtQuarantine.setD2(store.d2);
+  positiveAtQuarantine.setDx([
+    // { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
+    { dx: 'udVNN3ErO9q', label: 'Quarantined Tested Positive', color: '#7798BF' },
+  ]);
+  positiveAtQuarantine.setPeriods(['LAST_14_DAYS']);
+  positiveAtQuarantine.setType('chart');
+  positiveAtQuarantine.setChartType('column');
+  // positiveAtQuarantine.setOrgUnitGroups(['aobWYizg7hR'])
+  positiveAtQuarantine.setFilterByPeriods(false)
+  positiveAtQuarantine.setDimension(d3.width - 10, d3.height - 500);
 
   const caseIncidence = new Visualization();
   caseIncidence.setD2(store.d2);
@@ -242,17 +270,18 @@ export const Dashboard = observer(() => {
       dx: 'aikFogLLKgR', label: 'Testing Capacity',
     },
     {
-      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Today', child: {
-        dx: 'kLUxutfrUjZ',
-        chart: 'line',
-        strokeColor: '#17803A',
-      }
+      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Today',
+      // child: {
+      //   dx: 'kLUxutfrUjZ',
+      //   chart: 'line',
+      //   strokeColor: '#17803A',
+      // }
     },
     {
       dx: 'oNWIFSlbOyL', label: 'Positive Today',
     },
   ]);
-  testingSites.setPeriods(['TODAY']);
+  testingSites.setPeriods(['YESTERDAY']);
   testingSites.setType('textValues');
 
 
@@ -266,18 +295,16 @@ export const Dashboard = observer(() => {
     { dx: 'Eh4jODrtZBT', label: 'Incidence', type: 'spline', yAxis: 1, color: '#90ee7e' },
   ]);
   testingCapacity.setPeriods(['LAST_14_DAYS']);
-  // testingCapacity.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
   testingCapacity.setFilterByPeriods(false);
   testingCapacity.setType('multiple');
-  // testingCapacity.setChartType('column');
-  testingCapacity.setDimension(d4.width - 210, d4.height - 50)
+  testingCapacity.setDimension(d4.width - 210, d4.height - 50);
 
 
   useEffect(() => {
     if (!store.isLight) {
       beds.changeDxClass({
         'QTLv7jKT6tU': black,
-        'THaNba5GyJj': redDark,
+        'THaNba5GyJj': black,
         'oK76O9uCtEe': redDark,
         'v9r6qu7MAvk': redDarkProgress,
       });
@@ -286,7 +313,7 @@ export const Dashboard = observer(() => {
         'oNWIFSlbOyL': { ...redDark, child: redDarkProgress },
         'AWqQSTtuWGl': black,
         'Aiu4kJtREFN': { ...black, child: greenDarkProgress },
-        'z1cgvbudBq6': { ...black, child: redDarkProgress },
+        'z1cgvbudBq6': { ...redDark, child: redDarkProgress },
         'tZ2Tfp9HjwG': redDarkProgress,
       });
 
@@ -317,9 +344,19 @@ export const Dashboard = observer(() => {
         'yRY5bpb2sr2': black,
         'uKHils0UxEe': black,
         'BM25rsG76xg': black,
-        'wAOwXzZwZhs': black,
+        'wAOwXzZwZhs': redDark,
+      });
+      quarantine.changeDxClass({
+        'Gxkl04U3CNh': black,
+        'lxZ5cSmC9p1': black,
+        'YOtibrmhr2c': black,
+        'udVNN3ErO9q': redDark,
+        // 'wAOwXzZwZhs': black,
       });
       positiveAtPOE.changeDxClass({
+        'wAOwXzZwZhs': null,
+      });
+      positiveAtQuarantine.changeDxClass({
         'wAOwXzZwZhs': null,
       });
       caseIncidence.changeDxClass({
@@ -329,8 +366,8 @@ export const Dashboard = observer(() => {
       testingSites.changeDxClass({
         'ELZwQO5nmUS': black,
         'aikFogLLKgR': black,
-        'W6jbNXRDbEI': { ...redDark, child: redDarkProgress },
-        'oNWIFSlbOyL': black
+        'W6jbNXRDbEI': { ...black },
+        'oNWIFSlbOyL': redDark
       });
       testingCapacity.changeDxClass({
         'aikFogLLKgR': null,
@@ -342,7 +379,27 @@ export const Dashboard = observer(() => {
     } else {
       caseIncidence.changeChartBackground('#ffffff')
     }
-  }, [store.isLight, testingSites, testingAndContactTracing, caseIncidence, beds, deaths, heathWorkers, travellers])
+  }, [
+    store.isLight,
+    testingSites,
+    testingAndContactTracing,
+    caseIncidence,
+    beds,
+    deaths,
+    heathWorkers,
+    travellers,
+    black,
+    dailyInfection,
+    greenDarkProgress,
+    incidence,
+    poes,
+    positiveAtPOE,
+    redDark,
+    redDarkProgress,
+    testingCapacity,
+    quarantine,
+    positiveAtQuarantine
+  ])
 
 
   return (
@@ -377,7 +434,7 @@ export const Dashboard = observer(() => {
           <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Testing and Contact Tracing</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30, textAlign: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30, textAlign: 'center' }}>
             {display(testingAndContactTracing)}
           </div>
         </div>
@@ -397,36 +454,17 @@ export const Dashboard = observer(() => {
           <div className={store.currentBackgrounds.header}>
             <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d11.height ? d11.height - 38 : 30 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', textAlign: 'center', height: d11.height ? d11.height - 38 : 30 }}>
             {display(beds)}
           </div>
-        </div>
-        {/* <div
-          style={{ display: 'flex', flexDirection: 'column', background: store.currentBackgrounds.cardBG }}
-          key="3"
-          ref={c33}
-          data-grid={{
-            w: 3,
-            h: 2,
-            x: 9,
-            y: 0,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div style={{ background: store.currentBackgrounds.header,color:store.currentBackgrounds.headerColor }}>
-            <span style={{ marginLeft: 10 }}>Point of Entries(POEs)</span>
-          </div>  
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', alignItems: "center", textAlign: 'center', height: d33.height ? d33.height - 38 : 30 }}>
-            {display(poes)}
-          </div>
-        </div> */}
+        </div>  
 
         <div
           key="4"
           ref={c1}
           style={{ display: 'flex', flexDirection: 'column', background: store.currentBackgrounds.cardBG }}
           data-grid={{
-            w: 9,
+            w: 8,
             h: 6,
             x: 0,
             y: 2,
@@ -444,14 +482,16 @@ export const Dashboard = observer(() => {
           </div>
         </div>
 
+
+        
         <div
           style={{ background: store.currentBackgrounds.cardBG }}
           key="6"
           ref={c3}
           data-grid={{
-            w: 3,
+            w: 2,
             h: 11,
-            x: 9,
+            x: 8,
             y: 2,
             static: process.env.NODE_ENV === "production",
           }}
@@ -461,10 +501,34 @@ export const Dashboard = observer(() => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
-            <div style={{ margin: 5, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: 500 }}>
+            <div style={{ margin: 5, display: 'flex', height: 500, flexDirection: 'column', justifyContent: 'space-around', }}>
               {display(travellers)}
             </div>
             <div style={{ padding: 5 }}>{display(positiveAtPOE)}</div>
+          </div>
+        </div>
+
+        <div
+          style={{ background: store.currentBackgrounds.cardBG }}
+          key="9"
+          ref={c4}
+          data-grid={{
+            w: 2,
+            h: 11,
+            x: 10,
+            y: 2,
+            static: process.env.NODE_ENV === "production",
+          }}
+        >
+          <div className={store.currentBackgrounds.header}>
+            <span style={{ marginLeft: 10 }}>Quarantine</span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
+            <div style={{ margin: 5, display: 'flex', height: 500, flexDirection: 'column', justifyContent: 'space-around', }}>
+              {display(quarantine)}
+            </div>
+            <div style={{ padding: 5 }}>{display(positiveAtQuarantine)}</div>
           </div>
         </div>
         <div
@@ -472,7 +536,7 @@ export const Dashboard = observer(() => {
           key="7"
           ref={c4}
           data-grid={{
-            w: 5,
+            w: 4,
             h: 5,
             x: 0,
             y: 8,
@@ -497,7 +561,7 @@ export const Dashboard = observer(() => {
           data-grid={{
             w: 4,
             h: 5,
-            x: 5,
+            x: 4,
             y: 8,
             static: process.env.NODE_ENV === "production",
           }}

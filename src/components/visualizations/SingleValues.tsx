@@ -30,7 +30,7 @@ export const SingleValues: FC<SingleValuesProps> = observer(({ element }) => {
     switch (vals.chart) {
       case 'circle':
       case 'line':
-        return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} otherText={vals.otherText} strokeWidth={vals.strokeWidth} stokeColor={vals.strokeColor} trailColor={vals.trailColor} textColor={vals.textColor} />
+        return <ProgressValue key={vals.dx} value={vals.value} chart={vals.chart} showInfo={vals.showInfo} otherText={vals.otherText} strokeWidth={vals.strokeWidth} stokeColor={vals.strokeColor} trailColor={vals.trailColor} textColor={vals.textColor} removePercentage={vals.removePercentage} />
       case 'text':
         return vals.value
       case 'textValue':
