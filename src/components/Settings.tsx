@@ -1,7 +1,7 @@
 import { SettingOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
-import {Modal} from 'antd'
+import { Modal } from 'antd'
 export const Settings = observer(() => {
   const [visible, setVisible] = useState(false);
 
@@ -15,7 +15,7 @@ export const Settings = observer(() => {
     setVisible(false)
   }
   return <div>
-    <SettingOutlined style={{ fontSize: '24px', color: 'white' }} onClick={showModal} />
+    <SettingOutlined style={{ fontSize: '24px', color: 'white', marginRight: 20, }} onClick={showModal} />
     <Modal
       title="Basic Modal"
       visible={visible}

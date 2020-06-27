@@ -190,8 +190,6 @@ export class Visualization {
         },
 
       };
-
-
       let colorAxis = {};
       let chart: any = {
         height: this.height,
@@ -261,51 +259,20 @@ export class Visualization {
           plotOptions,
           tooltip,
           xAxis,
-          series,
-        };
-      } else if (this.chartType === "pie" && this.data) {
-        chart = {
-          ...chart,
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false,
-          type: this.chartType,
-        };
-        tooltip = {
-          pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
-        };
-        plotOptions = {
-          pie: {
-            allowPointSelect: true,
-            cursor: "pointer",
-            dataLabels: {
-              enabled: true,
-              format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+          yAxis: [{ // Primary yAxis
+            labels: {
+              format: '{value}',
+              style: {
+                color: 'white'
+              }
             },
-          },
-        };
-
-        series = [
-          {
-            name: "Cases by Country",
-            colorByPoint: true,
-            data: this.data.rows.map((r: any[]) => {
-              return {
-                name: String(this.data.metaData.items[r[0]].name)
-                  .replace("CC. ", "")
-                  .replace(" Cases", ""),
-                y: Number(r[1]),
-              };
-            }),
-          },
-        ];
-
-        fullChart = {
-          ...fullChart,
-          chart,
-          plotOptions,
-          tooltip,
-          xAxis,
+            title: {
+              text: 'Number',
+              style: {
+                color: 'white'
+              }
+            }
+          }],
           series,
         };
       } else if (["line", "spline"].indexOf(this.chartType) !== -1 && this.data) {
@@ -456,9 +423,9 @@ export class Visualization {
         });
 
         return {
-          // title: {
-          //   text: `<span style="font-size: 16px;font-weight:bolder;color:white; ">Daily Test Summary</span>`,
-          // },
+          title: {
+            text: `<span style="font-size: 16px;font-weight:bolder;color:white; ">${this.title}</span>`,
+          },
           chart: {
             zoomType: 'xy',
             height: this.height,
@@ -497,15 +464,15 @@ export class Visualization {
             }
           }, { // Secondary yAxis
             title: {
-              text: 'Cumulative Daily Cases',
+              text: this.dx[this.dx.length - 1].label,
               style: {
-                color: this.dx[1].color
+                color: this.dx[this.dx.length - 1].color
               }
             },
             labels: {
               format: '{value}',
               style: {
-                color: this.dx[1].color
+                color: this.dx[this.dx.length - 1].color
               }
             },
             opposite: true
@@ -544,7 +511,7 @@ export class Visualization {
               strokeColor: d.child.strokeColor,
               className: d.child.className,
               labelClassName: d.child.labelClassName,
-              removePercentage:d.child.removePercentage
+              removePercentage: d.child.removePercentage
             }
           }
 
@@ -562,7 +529,7 @@ export class Visualization {
             value: searchedNum ? Number(Number(searchedNum[1]).toFixed(1)).toLocaleString() : '0',
             chart: d.chart,
             child,
-            removePercentage:d.removePercentage
+            removePercentage: d.removePercentage
           }]
         });
         return fromPairs(dxes);

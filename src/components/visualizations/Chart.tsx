@@ -1,12 +1,11 @@
-import React, { FC, useEffect } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import accessibility from 'highcharts/modules/accessibility'
-
+import accessibility from 'highcharts/modules/accessibility';
 import { observer } from "mobx-react";
-import { TItem } from "../../models/Visualization";
+import React, { FC, useEffect } from "react";
 import { useStore } from "../../Context";
-import { Spinner } from '../Spinner'
+import { TItem } from "../../models/Visualization";
+import { Spinner } from '../Spinner';
 
 
 accessibility(Highcharts);
@@ -29,7 +28,7 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
   }, [element, store.selectedOrgUnit, store.isLight, store.refreshRate]);
 
   if (element.loading || !element.chart) {
-    return <Spinner/>;
+    return <Spinner />;
   }
 
   return <HighchartsReact highcharts={Highcharts} options={element.chart} />;

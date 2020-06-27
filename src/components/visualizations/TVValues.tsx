@@ -34,7 +34,7 @@ export const TVValues: FC<SingleValuesProps> = observer(({ element }) => {
         {Object.values(element.chart).map((value: any, i: number) => (
           <div key={value.dx} style={{ fontSize: 28, marginLeft: 20, marginRight: 20 }}>
             <span style={{ marginRight: 8 }}>{value.label}</span>
-            <span style={{ color: '#1b3a50', fontWeight: 'bolder' }}>{value.value}</span>
+            <span style={{ color: '#1b3a50', fontWeight: 'bolder' }}>{value.value}{value.otherText}</span>
           </div>
         ))}
       </Marquee>

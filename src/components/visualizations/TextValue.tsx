@@ -16,7 +16,7 @@ export const TextValue: FC<TextValueProps> = ({
   otherText = ''
 }) => {
   return (
-    <div className="container">
+    <div className="flex flex-col p-0 font-semibold items-center">
       <div className={labelClassName}>
         {label}
       </div>

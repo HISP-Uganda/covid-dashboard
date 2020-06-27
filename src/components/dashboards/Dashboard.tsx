@@ -1,20 +1,77 @@
 // import { Select } from "antd";
 import dayjs from 'dayjs';
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
-import { Responsive, WidthProvider } from "react-grid-layout";
-import useDimensions from "react-use-dimensions";
-import { useStore } from "../../Context";
-import { TItem, Visualization } from "../../models/Visualization";
+import React, { useEffect, FC } from "react";
+import { useStore } from '../../Context';
+import { Visualization, TItem } from '../../models/Visualization';
 import { Chart } from "../visualizations/Chart";
 import { Map } from "../visualizations/Map";
 import { SingleValues } from "../visualizations/SingleValues";
 import { TVValues } from "../visualizations/TVValues";
+import useDimensions from "react-use-dimensions";
+import hispLogo from '../../images/logo.png'
+import whoLogo from '../../images/h-logo-blue.svg'
 
+interface DashboardItemProps {
+  title: string;
+  element: TItem;
+  other?: TItem;
+  className?: string;
+  otherIsMain?: boolean;
+  childClass?: string;
+}
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+interface ItemProps {
+  element: TItem;
+}
+
+const Item: FC<ItemProps> = ({ element }) => {
+  switch (element.type) {
+    case "chart":
+      if (element.chartType === "map") {
+        return <Map element={element} />;
+      }
+      return <Chart element={element} />;
+    case "multiple":
+      return <Chart element={element} />;
+    case "plainText":
+      return element.data;
+    case "textValues":
+      return <SingleValues element={element} />;
+  }
+}
 // const { Option } = Select;
+const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other, className = '', childClass = "", otherIsMain = false }) => {
+  const [c1, d1] = useDimensions({ liveMeasure: true });
+  if (other && otherIsMain) {
+    other.setDimension(d1.width - 150, d1.height - 38)
+  } else if (other && !otherIsMain) {
+    element.setDimension(d1.width - 150, d1.height - 38);
+  } else {
+    element.setDimension(d1.width, d1.height - 38);
+  }
+  const store = useStore();
+  return <div ref={c1} className={className}>
+    <div className={store.currentBackgrounds.header}>
+      <span className="ml-1">{title}</span>
+    </div>
 
+    {!!other ? otherIsMain ? <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr' }}>
+      <div className="flex flex-col justify-around items-center">
+        <Item element={element} />
+      </div>
+      <Item element={other} />
+    </div> : <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px' }}>
+        <Item element={element} />
+        <div className="flex flex-col justify-around items-center">
+          <Item element={other} />
+        </div>
+      </div> : <div className={childClass} style={{ height: element.height ? element.height : '' }}>
+        <Item element={element} />
+      </div>}
+  </div>
+
+})
 
 export const enumerateDates = (startDate: string) => {
   const start = dayjs(startDate).toDate();
@@ -24,7 +81,6 @@ export const enumerateDates = (startDate: string) => {
   const month = start.getMonth();
   let day = start.getDate();
   const dates: Date[] = [start];
-
 
   while (dates[dates.length - 1] < lastDate) {
     dates.push(new Date(year, month, day++));
@@ -36,16 +92,6 @@ export const enumerateDates = (startDate: string) => {
 
 export const Dashboard = observer(() => {
   const store = useStore();
-  const [c1, d1] = useDimensions({ liveMeasure: false });
-  const [c2, d2] = useDimensions({ liveMeasure: false });
-  const [c3, d3] = useDimensions({ liveMeasure: false });
-  const [c4, d4] = useDimensions({ liveMeasure: false });
-
-  const [c11, d11] = useDimensions({ liveMeasure: false });
-  const [c22, d22] = useDimensions({ liveMeasure: false });
-  const [c33] = useDimensions({ liveMeasure: false });
-  // const [c44] = useDimensions({ liveMeasure: false });
-  // const [c55] = useDimensions({ liveMeasure: false });
 
   const black = { className: 'white', labelClassName: 'indicator-label' };
   const redDark = { className: 'red-dark', labelClassName: 'indicator-label' };
@@ -53,25 +99,6 @@ export const Dashboard = observer(() => {
   const greenDarkProgress = { strokeColor: '#20C997', trailColor: '#fffbe9', textColor: '#f1f7fb' };
 
   const redDarkProgress = { strokeColor: '#ff5b5c', trailColor: '#fffbe9', textColor: '#f1f7fb' }
-
-
-
-  const display = (element: TItem) => {
-    switch (element.type) {
-      case "chart":
-        if (element.chartType === "map") {
-          return <Map element={element} />;
-        }
-        return <Chart element={element} />;
-      case "multiple":
-        return <Chart element={element} />;
-      case "plainText":
-        return element.data;
-
-      case "textValues":
-        return <SingleValues element={element} />;
-    }
-  };
 
   const beds = new Visualization();
   beds.setData({ rows: [] });
@@ -91,7 +118,7 @@ export const Dashboard = observer(() => {
   testingAndContactTracing.setDx([
     { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
     {
-      dx: 'oNWIFSlbOyL', className: 'red', label: 'Tested Positive', child: {
+      dx: 'oNWIFSlbOyL', className: 'text-red-400 text-xl', label: 'Tested Positive', labelClassName: 'text-lg', child: {
         dx: 'DhGtpi9ehqp',
         chart: 'line',
         strokeWidth: 8
@@ -136,7 +163,7 @@ export const Dashboard = observer(() => {
   incidence.setType('chart');
   incidence.setChartType('spline');
   incidence.setFilterByPeriods(false);
-  incidence.setDimension(d1.width - 120, d1.height - 50);
+  // incidence.setDimension(d1.width - 120, d1.height - 50);
 
   const dailyInfection = new Visualization();
   dailyInfection.setD2(store.d2);
@@ -148,7 +175,7 @@ export const Dashboard = observer(() => {
   dailyInfection.setFilterByPeriods(false);
   dailyInfection.setType('chart');
   dailyInfection.setChartType('column');
-  dailyInfection.setDimension(d2.width - 200, d2.height - 50)
+  // dailyInfection.setDimension(d2.width - 200, d2.height - 50)
 
   const deaths = new Visualization();
   deaths.setD2(store.d2);
@@ -227,7 +254,7 @@ export const Dashboard = observer(() => {
   positiveAtPOE.setChartType('column');
   // positiveAtPOE.setOrgUnitGroups(['aobWYizg7hR'])
   positiveAtPOE.setFilterByPeriods(false)
-  positiveAtPOE.setDimension(d3.width - 10, d3.height - 500);
+  // positiveAtPOE.setDimension(d3.width - 10, d3.height - 500);
 
 
   const positiveAtQuarantine = new Visualization();
@@ -241,7 +268,7 @@ export const Dashboard = observer(() => {
   positiveAtQuarantine.setChartType('column');
   // positiveAtQuarantine.setOrgUnitGroups(['aobWYizg7hR'])
   positiveAtQuarantine.setFilterByPeriods(false)
-  positiveAtQuarantine.setDimension(d3.width - 10, d3.height - 500);
+  // positiveAtQuarantine.setDimension(d3.width - 10, d3.height - 500);
 
   const caseIncidence = new Visualization();
   caseIncidence.setD2(store.d2);
@@ -256,7 +283,7 @@ export const Dashboard = observer(() => {
   caseIncidence.setFilterByPeriods(false);
   caseIncidence.setType('multiple');
   // caseIncidence.setChartType('column');
-  caseIncidence.setDimension(d1.width - 210, d1.height - 50)
+  // caseIncidence.setDimension(d1.width - 210, d1.height - 50)
 
   const testingSites = new Visualization();
   testingSites.setD2(store.d2);
@@ -282,8 +309,6 @@ export const Dashboard = observer(() => {
   testingSites.setPeriods(['YESTERDAY']);
   testingSites.setType('textValues');
 
-
-
   const testingCapacity = new Visualization();
   testingCapacity.setD2(store.d2);
   testingCapacity.setDx([
@@ -295,8 +320,8 @@ export const Dashboard = observer(() => {
   testingCapacity.setPeriods(['LAST_14_DAYS']);
   testingCapacity.setFilterByPeriods(false);
   testingCapacity.setType('multiple');
-  testingCapacity.setDimension(d4.width - 210, d4.height - 50);
-
+  // testingCapacity.setDimension(d4.width - 210, d4.height - 50);
+  const map = new Visualization();
 
   useEffect(() => {
     if (!store.isLight) {
@@ -399,197 +424,25 @@ export const Dashboard = observer(() => {
     positiveAtQuarantine
   ])
 
-
   return (
-    <div style={{ background: store.currentBackgrounds.background }}>
-      <ResponsiveGridLayout
-        className="layout"
-        containerPadding={[5, 5]}
-        margin={[10, 10]}
-        breakpoints={{
-          xxl: 3400,
-          lg: 1200,
-          md: 996,
-          sm: 768,
-          xs: 480,
-          xxs: 0,
-        }}
-        cols={{ xxl: 12, lg: 12, md: 9, sm: 1, xs: 1, xxs: 1 }}
-        rowHeight={70}
-      >
-        <div
-          style={{ background: store.currentBackgrounds.cardBG, height: '100%' }}
-          key="2"
-          ref={c22}
-          data-grid={{
-            w: 8,
-            h: 2,
-            x: 0,
-            y: 0,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>Testing and Contact Tracing</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', height: d22.height ? d22.height - 38 : 30, textAlign: 'center' }}>
-            {display(testingAndContactTracing)}
-          </div>
-        </div>
-
-        <div
-          style={{ display: 'flex', flexDirection: 'column', background: store.currentBackgrounds.cardBG }}
-          key="1"
-          ref={c11}
-          data-grid={{
-            w: 4,
-            h: 2,
-            x: 8,
-            y: 0,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>Admissions and Bed Occupancy</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center', textAlign: 'center', height: d11.height ? d11.height - 38 : 30 }}>
-            {display(beds)}
-          </div>
-        </div>  
-
-        <div
-          key="4"
-          ref={c1}
-          style={{ display: 'flex', flexDirection: 'column', background: store.currentBackgrounds.cardBG }}
-          data-grid={{
-            w: 8,
-            h: 6,
-            x: 0,
-            y: 2,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>Case Incidence</span>
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div style={{ margin: 5 }}>
-              {display(caseIncidence)}
-            </div>
-            <div style={{ padding: 5, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}> {display(deaths)}</div>
-          </div>
-        </div>
-
-        <div
-          style={{ background: store.currentBackgrounds.cardBG }}
-          key="6"
-          ref={c3}
-          data-grid={{
-            w: 2,
-            h: 11,
-            x: 8,
-            y: 2,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>POE Screening and Testing</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
-            <div style={{ margin: 5, display: 'flex', height: 500, flexDirection: 'column', justifyContent: 'space-around', }}>
-              {display(travellers)}
-            </div>
-            <div style={{ padding: 5 }}>{display(positiveAtPOE)}</div>
-          </div>
-        </div>
-
-        <div
-          style={{ background: store.currentBackgrounds.cardBG }}
-          key="9"
-          ref={c4}
-          data-grid={{
-            w: 2,
-            h: 11,
-            x: 10,
-            y: 2,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>Quarantine</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: d3.height ? d3.height - 38 : '' }}>
-            <div style={{ margin: 5, display: 'flex', height: 500, flexDirection: 'column', justifyContent: 'space-around', }}>
-              {display(quarantine)}
-            </div>
-            <div style={{ padding: 5 }}>{display(positiveAtQuarantine)}</div>
-          </div>
-        </div>
-        <div
-          style={{ background: store.currentBackgrounds.cardBG, height: '100%' }}
-          key="7"
-          ref={c4}
-          data-grid={{
-            w: 4,
-            h: 5,
-            x: 0,
-            y: 8,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>Testing Sites and Capacity</span>
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div style={{ margin: 5, height: d4.height ? d4.height - 50 : '', width: 210, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-              {display(testingSites)}
-            </div>
-            <div style={{ padding: 5, alignItems: 'center' }}>{display(testingCapacity)}</div>
-          </div>
-        </div>
-
-        <div
-          style={{ background: store.currentBackgrounds.cardBG }}
-          key="5"
-          ref={c2}
-          data-grid={{
-            w: 4,
-            h: 5,
-            x: 4,
-            y: 8,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <div className={store.currentBackgrounds.header}>
-            <span style={{ marginLeft: 10 }}>Health Worker Infections</span>
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div style={{ margin: 5 }}>
-              {display(dailyInfection)}
-            </div>
-            <div style={{ padding: 5, display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', alignContent: 'center' }}>{display(heathWorkers)}</div>
-          </div>
-        </div>
-
-
-        <div
-          style={{ background: '#fffbe9', display: 'flex', alignContent: 'center', alignItems: 'center' }}
-          key="8"
-          ref={c33}
-          data-grid={{
-            w: 12,
-            h: 1,
-            x: 0,
-            y: 13,
-            static: process.env.NODE_ENV === "production",
-          }}
-        >
-          <TVValues element={travellers} />
-        </div>
-
-      </ResponsiveGridLayout>
+    <div className="dashboard1 bg-black h-full">
+      <div className="grid grid-rows-1 grid-cols-6 gap-1 flex flex-col">
+        <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4 bg-gray-800" title="Admissions and Bed Occupancy" childClass="flex justify-around text-center" />
+        <DashboardItem element={beds} title="Admissions and Bed Occupancy" className="row-span-1 col-span-2 bg-gray-800" childClass="flex justify-around text-center" />
+      </div>
+      <div className="h-full grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 lg:grid-cols-6 grid-cols-1 md:grid-cols-2 gap-1">
+        <DashboardItem element={caseIncidence} other={deaths} title="Case Incidence" className="row-span-1 col-span-1 lg:col-span-4 bg-gray-800" />
+        <div title="Case Distribution" className="row-span-1 col-span-1 lg:col-span-2 bg-gray-800" />
+        <DashboardItem element={testingSites} other={testingCapacity} otherIsMain={true} title="Testing Sites and Capacity" className="row-span-1 col-span-1 lg:col-span-2 bg-gray-800" />
+        <DashboardItem element={dailyInfection} other={heathWorkers} title="Health Worker Infections" className="row-span-1 col-span-1 lg:col-span-2 bg-gray-800" />
+        <DashboardItem element={travellers} title="POE Screening and Testing" className="row-span-1 col-span-1 bg-gray-800" childClass="flex justify-around text-center flex-col items-center" />
+        <DashboardItem element={quarantine} title="Quarantine" className="row-span-1 col-span-1 bg-gray-800" childClass="flex justify-around text-center flex-col items-center" />
+      </div>
+      <div className="bg-white flex items-center">
+        <img src={whoLogo} style={{ height: 'auto', width: '100%', maxWidth: 200, marginLeft: 10 }} alt="" />
+        <TVValues element={travellers} />
+        <img src={hispLogo} style={{ height: 'auto', width: '100%', maxWidth: 120, marginLeft: 'auto', marginRight: 10 }} alt="" />
+      </div>
     </div>
   );
 });
