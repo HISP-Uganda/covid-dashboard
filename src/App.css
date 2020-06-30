@@ -23,7 +23,7 @@
 }
 
 .tab-header-black {
-  margin-left: 24px;
+  padding-left: 24px;
   font-size: 15px;
   /* font-weight: bold; */
   text-transform: uppercase;
@@ -35,7 +35,7 @@
 }
 
 .tab-header {
-  margin-left: 24px;
+  padding-left: 24px;
   font-size: 15px;
   /* font-weight: bold; */
   text-transform: uppercase;
@@ -81,6 +81,20 @@
 
 .indicator-progress {
   color: #a3afbd;
+  font-size: 28px;
+  font-family: Arial;
+}
+
+.light {
+  background: none;
+}
+
+.card-bg {
+  background: #f4f4f4;
+}
+
+.blue {
+  color: #1b3a50;
   font-size: 28px;
   font-family: Arial;
 }

@@ -4,6 +4,8 @@ import HighchartsReact from "highcharts-react-official";
 import { observer } from "mobx-react";
 import { TItem } from "../../models/Visualization";
 import { useStore } from "../../Context";
+import { Spinner } from '../Spinner';
+
 
 require("highcharts/modules/map")(Highcharts);
 
@@ -12,13 +14,12 @@ interface MapProps {
 }
 export const Map: FC<MapProps> = observer(({ element }) => {
   const store = useStore();
-
   useEffect(() => {
     element.fetchUnitsAndData(store.selectedOrgUnit);
   }, [store.selectedOrgUnit, element]);
 
   if (element.loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (

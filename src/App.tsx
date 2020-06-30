@@ -1,4 +1,4 @@
-import { Menu } from "antd";
+import { Menu, Switch as ASwitch } from "antd";
 import { observer } from 'mobx-react';
 import "mobx-react-lite/batchingForReactDom";
 import React from "react";
@@ -19,11 +19,12 @@ import emblem from './images/Coat_of_arms_of_Uganda.svg'
 
 import "./App.css";
 import "./index.css";
+import { useStore } from "./Context";
 
 const { SubMenu } = Menu;
 
 export const App = observer(() => {
-  // const store = useStore();
+  const store = useStore();
   return <Router>
     <div className="w-screen h-screen grid-container">
       <div className="bg-gray-200 flex items-center p-0 m-0 bg-gray-900">
@@ -32,6 +33,7 @@ export const App = observer(() => {
           <span style={{ color: 'white', fontSize: 28, marginBottom: 2 }}>Ministry of Health</span>
           <span style={{ color: 'white', fontWeight: 'lighter', fontSize: 20, marginTop: 2 }}>COVID-19 Monitoring Dashboard </span>
         </div>
+        <div style={{ marginLeft: 'auto' }}><ASwitch onChange={store.setIsLight} checked={store.isLight} /></div>
         <Menu mode="horizontal" theme="dark" style={{ background: 'none', marginLeft: 'auto' }} className="ant-menu-item-selected">
           <Menu.Item key="mail" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/`}>Summary</Link>
@@ -59,7 +61,7 @@ export const App = observer(() => {
         <hr style={{ margin: 0, border: '1px solid yellow' }} />
         <hr style={{ margin: 0, border: '1px solid red' }} />
       </div>
-      <div className="bg-black">
+      <div className={store.currentBackgrounds.background}>
         <Switch>
           <Route path={`/surveillance`}><Surveillance /></Route>
           <Route path={`/case-management`}><Case /></Route>

@@ -90,7 +90,6 @@ export class Visualization {
         .addDataDimension(flatten(realDimensions))
         // .withAggregationType("SUM")
         .withSkipRounding(true);
-
       if (this.filterByOus) {
         req = req.addOrgUnitFilter(this.ou);
       } else {
@@ -115,11 +114,13 @@ export class Visualization {
   @action fetchGeoJson = async (unit: string) => {
     if (unit) {
       const api = this.d2.Api.getApi();
-      const { children } = await api.get(`organisationUnits/${unit}`, {
-        fields: "children[id,name,geometry]",
+      const { organisationUnits } = await api.get(`organisationUnits`, {
+        level: 3,
+        paging: false,
+        fields: "id,name,geometry",
       });
 
-      const features = children
+      const features = organisationUnits
         .map((child: any) => {
           if (!child.geometry || child.geometry.type === "Point") {
             return null;
@@ -141,14 +142,16 @@ export class Visualization {
         type: "FeatureCollection",
         features,
       };
-      this.setOu(children.map((c: any) => c.id));
+      this.setOu(organisationUnits.map((c: any) => c.id));
+      this.filterByOus = false;
     }
   };
 
   @action fetchUnitsAndData = async (unit: string) => {
     this.setLoading(true);
     await this.fetchGeoJson(unit);
-    await this.fetchFromAnalytics();
+    await this.fetchFromAnalytics(false);
+    console.log(this.data);
     this.setLoading(false);
   };
 
@@ -324,7 +327,8 @@ export class Visualization {
           xAxis,
           series,
         };
-      } else if (this.chartType === "map" && this.data) {
+      } else if (this.geoJson && this.chartType === "map") {
+        console.log('are we here')
         chart = {
           ...chart,
           map: this.geoJson,
@@ -332,11 +336,17 @@ export class Visualization {
 
         colorAxis = {
           tickPixelInterval: 100,
+          minColor: '#FFF5F5',
+          maxColor: '#FF0000',
         };
 
-        const realData = this.data.rows.map((r: any) => {
-          return [r[1], Number(r[2])];
-        });
+        let realData = []
+
+        if (this.data) {
+          realData = this.data.rows.map((r: any) => {
+            return [r[1], Number(r[2])];
+          });
+        }
 
         series = [
           {
@@ -350,7 +360,7 @@ export class Visualization {
               },
             },
             dataLabels: {
-              enabled: true,
+              enabled: false,
               format: "{point.properties.name}",
             },
           },

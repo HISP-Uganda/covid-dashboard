@@ -51,9 +51,9 @@ const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other,
     element.setDimension(d1.width, d1.height - 38);
   }
   const store = useStore();
-  return <div ref={c1} className={className}>
+  return <div ref={c1} className={className + ' ' + store.currentBackgrounds.cardBG}>
     <div className={store.currentBackgrounds.header}>
-      <span className="ml-1">{title}</span>
+      <span>{title}</span>
     </div>
 
     {!!other ? otherIsMain ? <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr' }}>
@@ -219,6 +219,10 @@ export const Dashboard = observer(() => {
     { dx: 'uKHils0UxEe', label: 'POEs Testing' },
     { dx: 'BM25rsG76xg', label: 'Tested at POEs' },
     { dx: 'wAOwXzZwZhs', label: 'Tested Positive at POEs' },
+    { dx: 'Gxkl04U3CNh', label: 'Quarantine Centers' },
+    { dx: 'lxZ5cSmC9p1', label: 'Total Quarantined' },
+    { dx: 'YOtibrmhr2c', label: 'Quarantined and Tested' },
+    { dx: 'udVNN3ErO9q', label: 'Quarantined and Tested Positive' },
     // { dx: 'vpDs2i5Fc4r', label: 'Contacts of Travellers Tested at POEs' },
     // { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
   ]);
@@ -226,21 +230,18 @@ export const Dashboard = observer(() => {
   travellers.setType('textValues');
 
 
-  const quarantine = new Visualization();
-  quarantine.setData({ rows: [] });
-  quarantine.setD2(store.d2);
-  quarantine.setDx([
-    // { dx: 'Wt8gxkBiJZ8', label: 'quarantine Registered at POEs' },
-    { dx: 'Gxkl04U3CNh', label: 'Quarantine Centers' },
-    { dx: 'lxZ5cSmC9p1', label: 'Total Quarantined' },
-    { dx: 'YOtibrmhr2c', label: 'Quarantined and Tested' },
-    { dx: 'udVNN3ErO9q', label: 'Quarantined and Tested Positive' },
-    // { dx: 'wAOwXzZwZhs', label: 'Tested Positive at POEs' },
-    // { dx: 'vpDs2i5Fc4r', label: 'Contacts of quarantine Tested at POEs' },
-    // { dx: 'z1cgvbudBq6', label: 'Contacts of quarantine Tested Positive' },
-  ]);
-  quarantine.setPeriods(['THIS_YEAR']);
-  quarantine.setType('textValues');
+  // const quarantine = new Visualization();
+  // quarantine.setData({ rows: [] });
+  // quarantine.setD2(store.d2);
+  // quarantine.setDx([
+  //   // { dx: 'Wt8gxkBiJZ8', label: 'quarantine Registered at POEs' },
+
+  //   // { dx: 'wAOwXzZwZhs', label: 'Tested Positive at POEs' },
+  //   // { dx: 'vpDs2i5Fc4r', label: 'Contacts of quarantine Tested at POEs' },
+  //   // { dx: 'z1cgvbudBq6', label: 'Contacts of quarantine Tested Positive' },
+  // ]);
+  // quarantine.setPeriods(['THIS_YEAR']);
+  // quarantine.setType('textValues');
 
 
   const positiveAtPOE = new Visualization();
@@ -320,8 +321,17 @@ export const Dashboard = observer(() => {
   testingCapacity.setPeriods(['LAST_14_DAYS']);
   testingCapacity.setFilterByPeriods(false);
   testingCapacity.setType('multiple');
-  // testingCapacity.setDimension(d4.width - 210, d4.height - 50);
+
   const map = new Visualization();
+  map.setD2(store.d2);
+  map.setType('chart');
+  map.setChartType('map');
+  map.setFilterByOus(false);
+  map.setDx([
+    { dx: 'zslpvuaEqGP', label: 'Total Daily Testing Capacity', color: '#7798BF' },
+  ]);
+  map.setPeriods(['THIS_YEAR']);
+
 
   useEffect(() => {
     if (!store.isLight) {
@@ -369,13 +379,13 @@ export const Dashboard = observer(() => {
         'BM25rsG76xg': black,
         'wAOwXzZwZhs': redDark,
       });
-      quarantine.changeDxClass({
-        'Gxkl04U3CNh': black,
-        'lxZ5cSmC9p1': black,
-        'YOtibrmhr2c': black,
-        'udVNN3ErO9q': redDark,
-        // 'wAOwXzZwZhs': black,
-      });
+      // quarantine.changeDxClass({
+      //   'Gxkl04U3CNh': black,
+      //   'lxZ5cSmC9p1': black,
+      //   'YOtibrmhr2c': black,
+      //   'udVNN3ErO9q': redDark,
+      //   // 'wAOwXzZwZhs': black,
+      // });
       positiveAtPOE.changeDxClass({
         'wAOwXzZwZhs': null,
       });
@@ -420,28 +430,28 @@ export const Dashboard = observer(() => {
     redDark,
     redDarkProgress,
     testingCapacity,
-    quarantine,
+    // quarantine,
     positiveAtQuarantine
   ])
 
   return (
-    <div className="dashboard1 bg-black h-full">
-      <div className="grid grid-rows-1 grid-cols-6 gap-1 flex flex-col">
-        <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4 bg-gray-800" title="Admissions and Bed Occupancy" childClass="flex justify-around text-center" />
-        <DashboardItem element={beds} title="Admissions and Bed Occupancy" className="row-span-1 col-span-2 bg-gray-800" childClass="flex justify-around text-center" />
+    <div className={`dashboard1 h-full`}>
+      <div className="grid grid-rows-1 grid-cols-6 gap-1 flex-col">
+        <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4" title="Admissions and Bed Occupancy" childClass="flex justify-around text-center" />
+        <DashboardItem element={beds} title="Admissions and Bed Occupancy" className="row-span-1 col-span-2" childClass="flex justify-around text-center" />
       </div>
       <div className="h-full grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 lg:grid-cols-6 grid-cols-1 md:grid-cols-2 gap-1">
-        <DashboardItem element={caseIncidence} other={deaths} title="Case Incidence" className="row-span-1 col-span-1 lg:col-span-4 bg-gray-800" />
-        <div title="Case Distribution" className="row-span-1 col-span-1 lg:col-span-2 bg-gray-800" />
-        <DashboardItem element={testingSites} other={testingCapacity} otherIsMain={true} title="Testing Sites and Capacity" className="row-span-1 col-span-1 lg:col-span-2 bg-gray-800" />
-        <DashboardItem element={dailyInfection} other={heathWorkers} title="Health Worker Infections" className="row-span-1 col-span-1 lg:col-span-2 bg-gray-800" />
-        <DashboardItem element={travellers} title="POE Screening and Testing" className="row-span-1 col-span-1 bg-gray-800" childClass="flex justify-around text-center flex-col items-center" />
-        <DashboardItem element={quarantine} title="Quarantine" className="row-span-1 col-span-1 bg-gray-800" childClass="flex justify-around text-center flex-col items-center" />
+        <DashboardItem element={caseIncidence} other={deaths} title="Case Incidence" className="row-span-1 col-span-1 lg:col-span-4" />
+        <DashboardItem element={map} title="Case Distribution" className="row-span-2 col-span-1 lg:col-span-2" childClass="flex items-center justify-center text-center" />
+        <DashboardItem element={testingSites} other={testingCapacity} otherIsMain={true} title="Testing Sites and Capacity" className="row-span-1 col-span-1 lg:col-span-2" />
+        <DashboardItem element={dailyInfection} other={heathWorkers} title="Health Worker Infections" className="row-span-1 col-span-1 lg:col-span-2" />
+        {/* <DashboardItem element={travellers} title="POE Screening and Testing" className="row-span-1 col-span-1" childClass="flex justify-around text-center flex-col items-center" /> */}
+        {/* <DashboardItem element={quarantine} title="Quarantine" className="row-span-1 col-span-1" childClass="flex justify-around text-center flex-col items-center" /> */}
       </div>
       <div className="bg-white flex items-center">
-        <img src={whoLogo} style={{ height: 'auto', width: '100%', maxWidth: 200, marginLeft: 10 }} alt="" />
+        <img src={whoLogo} style={{ height: 'auto', width: '100%', maxWidth: 160, marginLeft: 10 }} alt="" />
         <TVValues element={travellers} />
-        <img src={hispLogo} style={{ height: 'auto', width: '100%', maxWidth: 120, marginLeft: 'auto', marginRight: 10 }} alt="" />
+        <img src={hispLogo} style={{ height: 'auto', width: '100%', maxWidth: 110, marginLeft: 'auto', marginRight: 10 }} alt="" />
       </div>
     </div>
   );

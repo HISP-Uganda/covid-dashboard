@@ -22,8 +22,6 @@ const initialize = async () => {
   const d2 = await init(config);
   store.setD2(d2);
   await store.loadUserOrgUnits();
-
-
   ReactDOM.render(<StoreContext.Provider value={store}><App /></StoreContext.Provider>, document.getElementById("root")
   );
 };

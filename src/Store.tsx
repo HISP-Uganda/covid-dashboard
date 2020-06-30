@@ -76,17 +76,17 @@ class Store {
   @computed get currentBackgrounds() {
     if (!this.isLight) {
       return {
-        background: '#1A223A',
-        cardBG: '#272E48',
+        background: 'bg-black',
+        cardBG: 'bg-gray-800',
         header: 'tab-header-black',
-        indicatorLabel: '#bdd1f8',
+        indicatorLabel: '',
 
       }
     }
 
     return {
-      background: '',
-      cardBG: '#F4F4F4',
+      background: 'light',
+      cardBG: 'card-bg',
       header: 'tab-header',
     }
   }

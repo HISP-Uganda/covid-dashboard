@@ -29,7 +29,7 @@ export const TVValues: FC<SingleValuesProps> = observer(({ element }) => {
 
 
   return (
-    <div>
+    <div className="px-2">
       <Marquee velocity={72} direction="rtl" debug={false} onFinish={() => { console.log('Finished') }} resetAfterTries={200} scatterRandomly={false} >
         {Object.values(element.chart).map((value: any, i: number) => (
           <div key={value.dx} style={{ fontSize: 28, marginLeft: 20, marginRight: 20 }}>
