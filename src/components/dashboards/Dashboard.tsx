@@ -437,7 +437,7 @@ export const Dashboard = observer(() => {
   return (
     <div className={`dashboard1 h-full`}>
       <div className="grid grid-rows-1 grid-cols-6 gap-1 flex-col">
-        <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4" title="Admissions and Bed Occupancy" childClass="flex justify-around text-center" />
+        <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4" title="Testing and Contact Tracing" childClass="flex justify-around text-center" />
         <DashboardItem element={beds} title="Admissions and Bed Occupancy" className="row-span-1 col-span-2" childClass="flex justify-around text-center" />
       </div>
       <div className="h-full grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 lg:grid-cols-6 grid-cols-1 md:grid-cols-2 gap-1">
