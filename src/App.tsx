@@ -27,7 +27,7 @@ export const App = observer(() => {
   const store = useStore();
   return <Router>
     <div className="w-screen h-screen grid-container">
-      <div className="bg-gray-200 flex items-center p-0 m-0 bg-gray-900">
+      <div className="flex items-center p-0 m-0 bg-gray-900">
         <img src={emblem} className="w-full" style={{ height: 'auto', width: '100%', maxWidth: 64, marginLeft: 10 }} alt="" />
         <div style={{ display: 'grid', gridTemplateRows: '32px 32px', marginLeft: 20 }}>
           <span style={{ color: 'white', fontSize: 28, marginBottom: 2 }}>Ministry of Health</span>
