@@ -277,9 +277,10 @@ export const Dashboard = observer(() => {
     // { dx: 'aikFogLLKgR', label: 'Total Daily Testing Capacity', type: 'column', },
     // { dx: 'W6jbNXRDbEI', label: 'Tested Done Today', type: 'column', },
     { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', color: '#96C5FF' },
+    { dx: 'oNWIFSlbOyL', label: `7 Day's Averages`, type: 'spline', color: '#E53E3E', movingAverage: true },
     { dx: 'YUdNyrF8iYp', label: 'Cumulative Daily Cases', type: 'spline', yAxis: 1, color: 'orange', lineWidth: 4 },
   ]);
-  caseIncidence.setPeriods(enumerateDates('2020-03-01'));
+  caseIncidence.setPeriods(enumerateDates('2020-03-22'));
   // caseIncidence.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
   caseIncidence.setFilterByPeriods(false);
   caseIncidence.setType('multiple');

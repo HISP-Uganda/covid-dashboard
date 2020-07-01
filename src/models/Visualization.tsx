@@ -1,6 +1,16 @@
-import { observable, action, computed } from "mobx";
+import { flatten, fromPairs, range, reduce } from 'lodash';
+import { action, computed, observable } from "mobx";
 import { generateUid } from "../utils/uid";
-import { fromPairs, flatten } from 'lodash'
+
+
+
+function sum(numbers: number[]) {
+  return reduce(numbers, (a, b) => a + b, 0);
+}
+
+function average(numbers: number[]) {
+  return sum(numbers) / (numbers.length || 1);
+}
 
 export class Visualization {
   @observable height: number = 0;
@@ -32,6 +42,7 @@ export class Visualization {
   @observable geoJson: any;
   @observable metadata: any = {}
   @observable orgUnitGroups: string[] = [];
+  @observable movingAverage: boolean = false;
 
   @action setLoading = (val: boolean) => (this.loading = val);
   @action setDx = (dx: any[]) => (this.dx = dx);
@@ -228,7 +239,7 @@ export class Visualization {
               }
             });
           } else {
-            data = this.data.metaData.dimensions.pe.map((p: string) => {
+            data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
               const dy = this.data.rows.find((r: any[]) => {
                 return d.dx === r[0] && p === r[1];
               });
@@ -287,11 +298,32 @@ export class Visualization {
           });
 
           series = this.dx.map((d: any) => {
-            const data = this.data.metaData.dimensions.pe.map((p: string) => {
-              const dy = this.data.rows.find((r: any[]) => {
-                return d.dx === r[0] && p === r[1];
-              });
-              if (dy) {
+            const data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
+              console.log(index)
+              let dy = [];
+              if (d.movingAverage) {
+                if (index >= 7) {
+                  const numbers = range(index, index - 7, -1).map((val: number) => {
+                    const period = this.data.metaData.dimensions.pe[val]
+                    const dt = this.data.rows.find((r: any[]) => {
+                      return d.dx === r[0] && period === r[1];
+                    });
+
+                    if (dt) {
+                      return dt[2]
+                    }
+                    return 0
+                  });
+                  dy = [d.dx, p, average(numbers)]
+                } else {
+                  dy = [d.dx, p, 0]
+                }
+              } else {
+                dy = this.data.rows.find((r: any[]) => {
+                  return d.dx === r[0] && p === r[1];
+                });
+              }
+              if (dy && dy.length > 0) {
                 return Number(dy[2]);
               } else {
                 return 0;
@@ -360,8 +392,8 @@ export class Visualization {
               },
             },
             dataLabels: {
-              enabled: false,
-              format: "{point.properties.name}",
+              enabled: true,
+              format: "{point.value}",
             },
           },
         ];
@@ -402,15 +434,46 @@ export class Visualization {
               }
             });
           } else {
-            data = this.data.metaData.dimensions.pe.map((p: string) => {
-              const dy = this.data.rows.find((r: any[]) => {
-                return d.dx === r[0] && p === r[1];
-              });
-              if (dy) {
+            data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
+              let dy = [];
+              if (d.movingAverage) {
+                // console.log('we are here')
+                if (index >= 7) {
+                  const numbers = range(index, index - 7, -1).map((val: number) => {
+                    const period = this.data.metaData.dimensions.pe[val];
+                    const dt = this.data.rows.find((r: any[]) => {
+                      return d.dx === r[0] && period === r[1];
+                    });
+
+                    if (dt) {
+                      return Number(dt[2]);
+                    }
+                    return 0
+                  });
+                  console.log(numbers);
+                  dy = [d.dx, p, average(numbers)]
+                } else {
+                  dy = [d.dx, p, 0]
+                }
+              } else {
+                dy = this.data.rows.find((r: any[]) => {
+                  return d.dx === r[0] && p === r[1];
+                });
+              }
+              if (dy && dy.length > 0) {
                 return Number(dy[2]);
               } else {
                 return 0;
               }
+
+              // const dy = this.data.rows.find((r: any[]) => {
+              //   return d.dx === r[0] && p === r[1];
+              // });
+              // if (dy) {
+              //   return Number(dy[2]);
+              // } else {
+              //   return 0;
+              // }
             });
           }
           let result: any = {
