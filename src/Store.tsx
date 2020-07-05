@@ -16,12 +16,18 @@ class Store {
 
   @action
   loadUserOrgUnits = async () => {
+    const api = this.d2.Api.getApi();
     try {
-      const data = await this.d2.currentUser.getOrganisationUnits({
-        paging: false,
-        fields: `id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty`,
+      // const data = await this.d2.currentUser.getOrganisationUnits({
+      //   paging: false,
+      //   fields: `id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty`,
+      // });
+
+      const { organisationUnits } = await api.get("me.json", {
+        fields: "organisationUnits[id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty]",
       });
-      this.userOrgUnits = data.toArray();
+      // console.log(data.toArray())
+      this.userOrgUnits = organisationUnits;
       this.selectedOrgUnit = this.userOrgUnits[0].id;
     } catch (e) {
       console.log(e);

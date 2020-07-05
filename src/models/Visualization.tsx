@@ -113,7 +113,6 @@ export class Visualization {
       }
       const data = await this.d2.analytics.aggregate.get(req);
       if (this.orgUnitGroups.length > 0) {
-        // console.log(J)
       }
       this.setData(data);
     }
@@ -162,7 +161,6 @@ export class Visualization {
     this.setLoading(true);
     await this.fetchGeoJson(unit);
     await this.fetchFromAnalytics(false);
-    console.log(this.data);
     this.setLoading(false);
   };
 
@@ -299,7 +297,6 @@ export class Visualization {
 
           series = this.dx.map((d: any) => {
             const data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
-              console.log(index)
               let dy = [];
               if (d.movingAverage) {
                 if (index >= 7) {
@@ -360,7 +357,6 @@ export class Visualization {
           series,
         };
       } else if (this.geoJson && this.chartType === "map") {
-        console.log('are we here')
         chart = {
           ...chart,
           map: this.geoJson,
@@ -437,7 +433,6 @@ export class Visualization {
             data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
               let dy = [];
               if (d.movingAverage) {
-                // console.log('we are here')
                 if (index >= 7) {
                   const numbers = range(index, index - 7, -1).map((val: number) => {
                     const period = this.data.metaData.dimensions.pe[val];
@@ -450,7 +445,6 @@ export class Visualization {
                     }
                     return 0
                   });
-                  console.log(numbers);
                   dy = [d.dx, p, average(numbers)]
                 } else {
                   dy = [d.dx, p, 0]
