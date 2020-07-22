@@ -56,12 +56,12 @@ const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other,
       <span>{title}</span>
     </div>
 
-    {!!other ? otherIsMain ? <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr' }}>
+    {!!other ? otherIsMain ? <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr' }}>
       <div className="flex flex-col justify-around items-center">
         <Item element={element} />
       </div>
       <Item element={other} />
-    </div> : <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px' }}>
+    </div> : <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px' }}>
         <Item element={element} />
         <div className="flex flex-col justify-around items-center">
           <Item element={other} />
@@ -297,7 +297,7 @@ export const Dashboard = observer(() => {
       dx: 'aikFogLLKgR', label: 'Testing Capacity',
     },
     {
-      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Today',
+      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Yesterday',
       // child: {
       //   dx: 'kLUxutfrUjZ',
       //   chart: 'line',
@@ -305,7 +305,7 @@ export const Dashboard = observer(() => {
       // }
     },
     {
-      dx: 'oNWIFSlbOyL', label: 'Positive Today',
+      dx: 'oNWIFSlbOyL', label: 'Positive Yesterday',
     },
   ]);
   testingSites.setPeriods(['YESTERDAY']);
