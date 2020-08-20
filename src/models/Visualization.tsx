@@ -569,7 +569,7 @@ export class Visualization {
 
             child = {
               label: d.child.label,
-              value: childValue ? Number(Number(childValue[1]).toFixed(1)).toLocaleString() : '0',
+              value: childValue ? Number(Number(childValue[1]).toFixed(2)).toLocaleString() : '0',
               chart: d.child.chart,
               strokeWidth: d.child.strokeWidth,
               otherText: d.child.otherText,
@@ -593,7 +593,7 @@ export class Visualization {
             otherText: d.otherText,
             className: d.className,
             labelClassName: d.labelClassName,
-            value: searchedNum ? Number(Number(searchedNum[1]).toFixed(1)).toLocaleString() : '0',
+            value: searchedNum ? Number(Number(searchedNum[1]).toFixed(2)).toLocaleString() : '0',
             chart: d.chart,
             child,
             removePercentage: d.removePercentage

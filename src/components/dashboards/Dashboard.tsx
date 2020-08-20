@@ -41,7 +41,7 @@ const Item: FC<ItemProps> = ({ element }) => {
   }
 }
 // const { Option } = Select;
-const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other, className = '', childClass = "", otherIsMain = false }) => {
+export const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other, className = '', childClass = "", otherIsMain = false }) => {
   const [c1, d1] = useDimensions({ liveMeasure: true });
   if (other && otherIsMain) {
     other.setDimension(d1.width - 150, d1.height - 38)
@@ -106,10 +106,10 @@ export const Dashboard = observer(() => {
   beds.setDx([
     { dx: 'QTLv7jKT6tU', label: 'Bed Capacity' },
     { dx: 'THaNba5GyJj', label: 'Beds Available', className: 'red' },
-    { dx: 'oK76O9uCtEe', label: 'Admissions', className: 'red' },
+    { dx: 'ghBNilqMiXq', label: 'Admissions', className: 'red' },
     { dx: 'v9r6qu7MAvk', chart: 'circle', otherText: 'Occupancy' }
   ]);
-  beds.setPeriods(['THIS_YEAR']);
+  beds.setPeriods(['TODAY']);
   beds.setType('textValues');
 
   const testingAndContactTracing = new Visualization();
@@ -118,21 +118,21 @@ export const Dashboard = observer(() => {
   testingAndContactTracing.setDx([
     { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
     {
-      dx: 'oNWIFSlbOyL', className: 'text-red-400 text-xl', label: 'Tested Positive', labelClassName: 'text-lg', child: {
+      dx: 'ubBVfdXXgWn', className: 'text-red-400 text-xl', label: 'Tested Positive', labelClassName: 'text-lg', child: {
         dx: 'DhGtpi9ehqp',
         chart: 'line',
         strokeWidth: 8
       }
     },
-    { dx: 'AWqQSTtuWGl', label: 'Contacts Identified' },
+    { dx: 'LBcQjKkPukY', label: 'Contacts Identified' },
     {
-      dx: 'Aiu4kJtREFN', label: 'Contacts Tested', child: {
+      dx: 'rjlTjyYSr0d', label: 'Contacts Tested', child: {
         dx: 'kLUxutfrUjZ',
         chart: 'line'
       }
     },
     {
-      dx: 'z1cgvbudBq6', className: 'red', label: 'Positive Contacts', child: {
+      dx: 'yK5LBdQeS5V', className: 'red', label: 'Positive Contacts', child: {
         dx: 'upO9ps9ItXy',
         chart: 'line'
       }
@@ -140,7 +140,7 @@ export const Dashboard = observer(() => {
     { dx: 'tZ2Tfp9HjwG', label: 'RO', chart: 'circle', otherText: 'RO', removePercentage: true },
 
   ]);
-  testingAndContactTracing.setPeriods(['THIS_YEAR']);
+  testingAndContactTracing.setPeriods(['TODAY']);
   testingAndContactTracing.setType('textValues');
 
   const poes = new Visualization();
@@ -169,24 +169,23 @@ export const Dashboard = observer(() => {
   dailyInfection.setD2(store.d2);
   dailyInfection.setDx([
     { dx: 'VGnmnm4OC47', label: 'Health Workers Tested' },
-    { dx: 'mF9tVYK4jEO', label: 'Health Workers Tested Positive' },
+    { dx: 'Gx06sMgGsbv', label: 'Health Workers Tested Positive' },
   ]);
   dailyInfection.setPeriods(['LAST_14_DAYS']);
   dailyInfection.setFilterByPeriods(false);
   dailyInfection.setType('chart');
   dailyInfection.setChartType('column');
   // dailyInfection.setDimension(d2.width - 200, d2.height - 50)
-
   const deaths = new Visualization();
   deaths.setD2(store.d2);
   deaths.setData({ rows: [] });
 
   deaths.setDx([
-    { dx: 'jBcRzxuNzGt', label: 'Recoveries' },
-    { dx: 'D7y8pwGMsgp', label: 'Total Deaths' },
+    { dx: 'sVPjmX4NMFg', label: 'Recoveries' },
+    { dx: 'bb6T8Nf4Ear', label: 'Total Deaths' },
     { dx: 'ob2qpzPpniN', label: 'Fatality Rates', otherText: '%' },
   ]);
-  deaths.setPeriods(['THIS_YEAR']);
+  deaths.setPeriods(['TODAY']);
   deaths.setType('textValues');
 
   const heathWorkers = new Visualization();
@@ -198,7 +197,7 @@ export const Dashboard = observer(() => {
       dx: 'VGnmnm4OC47', label: 'Workers Tested'
     },
     {
-      dx: 'mF9tVYK4jEO', className: 'red', label: 'Positive Workers'
+      dx: 'Gx06sMgGsbv', className: 'red', label: 'Positive Workers'
     },
     {
       dx: 'omNy6QA0ptE',
@@ -329,7 +328,7 @@ export const Dashboard = observer(() => {
   map.setChartType('map');
   map.setFilterByOus(false);
   map.setDx([
-    { dx: 'zslpvuaEqGP', label: 'Total Daily Testing Capacity', color: '#7798BF' },
+    { dx: 'MlGJOMLTdDg', label: 'Total Daily Testing Capacity', color: '#7798BF' },
   ]);
   map.setPeriods(['THIS_YEAR']);
 
@@ -339,15 +338,15 @@ export const Dashboard = observer(() => {
       beds.changeDxClass({
         'QTLv7jKT6tU': black,
         'THaNba5GyJj': black,
-        'oK76O9uCtEe': redDark,
+        'ghBNilqMiXq': redDark,
         'v9r6qu7MAvk': redDarkProgress,
       });
       testingAndContactTracing.changeDxClass({
         'CemgWPzdnUf': black,
-        'oNWIFSlbOyL': { ...redDark, child: redDarkProgress },
-        'AWqQSTtuWGl': black,
-        'Aiu4kJtREFN': { ...black, child: greenDarkProgress },
-        'z1cgvbudBq6': { ...redDark, child: redDarkProgress },
+        'ubBVfdXXgWn': { ...redDark, child: redDarkProgress },
+        'LBcQjKkPukY': black,
+        'rjlTjyYSr0d': { ...black, child: greenDarkProgress },
+        'yK5LBdQeS5V': { ...redDark, child: redDarkProgress },
         'tZ2Tfp9HjwG': redDarkProgress,
       });
 
@@ -364,13 +363,13 @@ export const Dashboard = observer(() => {
         'mF9tVYK4jEO': null,
       })
       deaths.changeDxClass({
-        'jBcRzxuNzGt': black,
-        'D7y8pwGMsgp': black,
+        'sVPjmX4NMFg': black,
+        'bb6T8Nf4Ear': black,
         'ob2qpzPpniN': black,
       });
       heathWorkers.changeDxClass({
         'VGnmnm4OC47': black,
-        'mF9tVYK4jEO': redDark,
+        'Gx06sMgGsbv': redDark,
         'omNy6QA0ptE': redDarkProgress,
       });
       travellers.changeDxClass({

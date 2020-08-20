@@ -20,6 +20,7 @@ import emblem from './images/Coat_of_arms_of_Uganda.svg'
 import "./App.css";
 import "./index.css";
 import { useStore } from "./Context";
+import { Lab } from "./components/dashboards/Lab";
 
 const { SubMenu } = Menu;
 
@@ -37,6 +38,9 @@ export const App = observer(() => {
         <Menu mode="horizontal" theme="dark" style={{ background: 'none', marginLeft: 'auto' }} className="ant-menu-item-selected">
           <Menu.Item key="mail" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/`}>Summary</Link>
+          </Menu.Item>
+          <Menu.Item key="lab" className="modified-item">
+            <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/lab`}>Laboratory Testing</Link>
           </Menu.Item>
           <Menu.Item key="surveillance" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/surveillance`}>Surveillance</Link>
@@ -70,6 +74,7 @@ export const App = observer(() => {
           <Route path={`/community`}><Community /></Route>
           <Route path={`/ict`}><ICT /></Route>
           <Route path={`/finance`}><Finance /></Route>
+          <Route path={`/lab`}><Lab /></Route>
           <Route exact path="/">
             <Dashboard />
           </Route>
