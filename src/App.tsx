@@ -34,7 +34,11 @@ export const App = observer(() => {
           <span style={{ color: 'white', fontSize: 28, marginBottom: 2 }}>Ministry of Health</span>
           <span style={{ color: 'white', fontWeight: 'lighter', fontSize: 20, marginTop: 2 }}>COVID-19 Monitoring Dashboard </span>
         </div>
-        <div style={{ marginLeft: 'auto' }}><ASwitch onChange={store.setIsLight} checked={store.isLight} /></div>
+        <div style={{ marginLeft: 'auto', display: 'flex' }}>
+          <ASwitch onChange={store.setIsLight} checked={store.isLight} />
+          <a href="https://eidsr.health.go.ug/dhis-web-dashboard/" style={{ marginLeft: 20, color: 'white', fontWeight: 'bold' }}>eIDSR DASHBOARD</a>
+
+        </div>
         <Menu mode="horizontal" theme="dark" style={{ background: 'none', marginLeft: 'auto' }} className="ant-menu-item-selected">
           <Menu.Item key="mail" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/`}>Summary</Link>

@@ -1,7 +1,10 @@
 import { observable, action, computed } from "mobx";
 import { flatten } from "lodash";
 import { TDashboard, Dashboard } from "./models/Dashboard";
+import axios from "axios";
+import { BASE_URL } from "./utils/uid";
 
+const baseUrl = BASE_URL;
 class Store {
   @observable currentDashboard: TDashboard = new Dashboard();
   @observable d2: any;
@@ -12,21 +15,17 @@ class Store {
 
   @action setD2 = async (d2: any) => (this.d2 = d2);
   @action setIsLight = (val: boolean) => this.isLight = val;
-  
+
 
   @action
   loadUserOrgUnits = async () => {
-    const api = this.d2.Api.getApi();
     try {
-      // const data = await this.d2.currentUser.getOrganisationUnits({
-      //   paging: false,
-      //   fields: `id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty`,
-      // });
-
-      const { organisationUnits } = await api.get("me.json", {
-        fields: "organisationUnits[id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty]",
+      const { data: { organisationUnits } } = await axios.get(`${baseUrl}/query`, {
+        params: {
+          path: 'me.json',
+          fields: "organisationUnits[id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty]",
+        }
       });
-      // console.log(data.toArray())
       this.userOrgUnits = organisationUnits;
       this.selectedOrgUnit = this.userOrgUnits[0].id;
     } catch (e) {
@@ -37,11 +36,13 @@ class Store {
   @action
   loadOrganisationUnitsChildren = async (parent: string) => {
     try {
-      const api = this.d2.Api.getApi();
-      const { organisationUnits } = await api.get("organisationUnits.json", {
-        filter: `id:in:[${parent}]`,
-        paging: "false",
-        fields: "children[id,name,path,leaf]",
+      const { data: { data: { organisationUnits } } } = await axios.get(`${baseUrl}/query`, {
+        params: {
+          path: 'organisationUnits.json',
+          filter: `id:in:[${parent}]`,
+          paging: "false",
+          fields: "children[id,name,path,leaf]",
+        }
       });
       const found = organisationUnits.map((unit: any) => {
         return unit.children.map((child: any) => {

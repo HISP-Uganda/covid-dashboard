@@ -14,7 +14,6 @@ export const Lab = observer(() => {
 
   const beds = new Visualization();
   beds.setData({ rows: [] });
-  beds.setD2(store.d2);
   beds.setDx([
     { dx: 'imTyJFtNY0v', label: 'Number of samples Received by Lab' },
     { dx: 'dCHWPc5O0hy', label: 'Number of tests conducted', className: 'red' },

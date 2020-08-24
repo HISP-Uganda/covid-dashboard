@@ -23,7 +23,6 @@ export class Dashboard {
     filterByPeriods: boolean = true
   ) => {
     const item = new Visualization();
-    item.setD2(this.d2);
     item.setCoordinates(x, y, w, h);
     item.setDx(dx);
     item.setPeriods(periods);
@@ -54,7 +53,6 @@ export class Dashboard {
 
   @action addItem = (x: number, y: number, w: number, h: number) => {
     const item = new Visualization();
-    item.setD2(this.d2);
     item.setCoordinates(x, y, w, h);
     this.visualizations = [...this.visualizations, item];
   };

@@ -1,8 +1,9 @@
-import { flatten, fromPairs, range, reduce } from 'lodash';
+import { flatten, fromPairs, range, reduce, isArray } from 'lodash';
 import { action, computed, observable } from "mobx";
-import { generateUid } from "../utils/uid";
+import { generateUid, BASE_URL } from "../utils/uid";
+import axios from "axios";
 
-
+const baseUrl = BASE_URL;
 
 function sum(numbers: number[]) {
   return reduce(numbers, (a, b) => a + b, 0);
@@ -20,7 +21,6 @@ export class Visualization {
   @observable w: number = 1;
   @observable h: number = 1;
   @observable i: string = generateUid();
-  @observable d2: any;
   @observable type: string = "chart";
   @observable chartType: string = "column";
   @observable data: any;
@@ -56,7 +56,6 @@ export class Visualization {
   @action setTitle = (val: string) => (this.title = val);
   @action setSubtitle = (val: string) => (this.subtitle = val);
   @action setXAxis = (val: string) => (this.xAxis = val);
-  @action setD2 = (val: any) => (this.d2 = val);
   @action setCssClass = (val: any) => (this.cssClass = val);
   @action setLabelClassName = (val: any) => (this.labelClassName = val);
   @action setMetadata = (val: any) => (this.metadata = val);
@@ -68,10 +67,12 @@ export class Visualization {
   };
 
   @action loadOrgUnitGroups = async () => {
-    const api = this.d2.Api.getApi();
-    const { organisationUnitGroups } = await api.get(`organisationUnitGroups.json`, {
-      fields: "organisationUnits",
-      filter: `id:in:[${this.orgUnitGroups.join(',')}]`
+    const { data: { organisationUnitGroups } } = await axios.get(`${baseUrl}/query`, {
+      params: {
+        path: 'organisationUnitGroups.json',
+        fields: "organisationUnits",
+        filter: `id:in:[${this.orgUnitGroups.join(',')}]`
+      }
     });
     const units = organisationUnitGroups.map(({ organisationUnits }: any) => {
       return organisationUnits.map((ou: any) => ou.id)
@@ -95,26 +96,19 @@ export class Visualization {
       const realDimensions = this.dx.map((d: any) => {
         const child = d.child ? [d.child.dx] : [];
         return [d.dx, ...child]
-      })
-      let req = new this.d2.analytics.request()
-        .withSkipData(false)
-        .addDataDimension(flatten(realDimensions))
-        // .withAggregationType("SUM")
-        .withSkipRounding(true);
-      if (this.filterByOus) {
-        req = req.addOrgUnitFilter(this.ou);
-      } else {
-        req = req.addOrgUnitDimension(this.ou);
+      });
+
+      const { data } = await axios.post(`${baseUrl}/analytics`, {
+        dx: flatten(realDimensions),
+        pe: this.periods,
+        ou: this.ou,
+        filterByOus: this.filterByOus,
+        filterByPeriods: this.filterByPeriods
+      });
+
+      if (!isArray(data)) {
+        this.setData(data)
       }
-      if (this.filterByPeriods) {
-        req = req.addPeriodFilter(this.periods);
-      } else {
-        req = req.addPeriodDimension(this.periods);
-      }
-      const data = await this.d2.analytics.aggregate.get(req);
-      if (this.orgUnitGroups.length > 0) {
-      }
-      this.setData(data);
     }
     if (loading) {
       this.setLoading(false);
@@ -123,36 +117,9 @@ export class Visualization {
 
   @action fetchGeoJson = async (unit: string) => {
     if (unit) {
-      const api = this.d2.Api.getApi();
-      const { organisationUnits } = await api.get(`organisationUnits`, {
-        level: 3,
-        paging: false,
-        fields: "id,name,geometry",
-      });
-
-      const features = organisationUnits
-        .map((child: any) => {
-          if (!child.geometry || child.geometry.type === "Point") {
-            return null;
-          }
-          return {
-            properties: {
-              id: child.id,
-              name: child.name,
-            },
-            type: "Feature",
-            geometry: child.geometry,
-          };
-        })
-        .filter((x: any) => {
-          return !!x;
-        });
-
-      this.geoJson = {
-        type: "FeatureCollection",
-        features,
-      };
-      this.setOu(organisationUnits.map((c: any) => c.id));
+      const { data: { ous, geoJson } } = await axios.get(`${baseUrl}/map`);
+      this.geoJson = geoJson;
+      this.setOu(ous);
       this.filterByOus = false;
     }
   };

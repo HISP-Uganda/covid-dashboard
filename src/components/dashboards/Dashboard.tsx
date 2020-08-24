@@ -102,7 +102,6 @@ export const Dashboard = observer(() => {
 
   const beds = new Visualization();
   beds.setData({ rows: [] });
-  beds.setD2(store.d2);
   beds.setDx([
     { dx: 'QTLv7jKT6tU', label: 'Bed Capacity' },
     { dx: 'THaNba5GyJj', label: 'Beds Available', className: 'red' },
@@ -114,7 +113,6 @@ export const Dashboard = observer(() => {
 
   const testingAndContactTracing = new Visualization();
   testingAndContactTracing.setData({ rows: [] });
-  testingAndContactTracing.setD2(store.d2);
   testingAndContactTracing.setDx([
     { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
     {
@@ -145,7 +143,6 @@ export const Dashboard = observer(() => {
 
   const poes = new Visualization();
   poes.setData({ rows: [] });
-  poes.setD2(store.d2);
   poes.setDx([
     { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
     { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
@@ -155,18 +152,15 @@ export const Dashboard = observer(() => {
   poes.setType('textValues');
 
   const incidence = new Visualization();
-  incidence.setD2(store.d2);
   incidence.setDx([
-    { dx: 'Eh4jODrtZBT', label: 'Incidence', color: '#1B3A50' },
+    { dx: 'Eh4jODrtZBT', label: 'Positivity Rate', color: '#1B3A50' },
   ]);
   incidence.setPeriods(['LAST_14_DAYS']);
   incidence.setType('chart');
   incidence.setChartType('spline');
   incidence.setFilterByPeriods(false);
-  // incidence.setDimension(d1.width - 120, d1.height - 50);
 
   const dailyInfection = new Visualization();
-  dailyInfection.setD2(store.d2);
   dailyInfection.setDx([
     { dx: 'VGnmnm4OC47', label: 'Health Workers Tested' },
     { dx: 'Gx06sMgGsbv', label: 'Health Workers Tested Positive' },
@@ -175,9 +169,7 @@ export const Dashboard = observer(() => {
   dailyInfection.setFilterByPeriods(false);
   dailyInfection.setType('chart');
   dailyInfection.setChartType('column');
-  // dailyInfection.setDimension(d2.width - 200, d2.height - 50)
   const deaths = new Visualization();
-  deaths.setD2(store.d2);
   deaths.setData({ rows: [] });
 
   deaths.setDx([
@@ -189,7 +181,6 @@ export const Dashboard = observer(() => {
   deaths.setType('textValues');
 
   const heathWorkers = new Visualization();
-  heathWorkers.setD2(store.d2);
   heathWorkers.setData({ rows: [] });
 
   heathWorkers.setDx([
@@ -210,9 +201,7 @@ export const Dashboard = observer(() => {
 
   const travellers = new Visualization();
   travellers.setData({ rows: [] });
-  travellers.setD2(store.d2);
   travellers.setDx([
-    // { dx: 'Wt8gxkBiJZ8', label: 'Travellers Registered at POEs' },
     { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
     { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
     { dx: 'uKHils0UxEe', label: 'POEs Testing' },
@@ -221,73 +210,40 @@ export const Dashboard = observer(() => {
     { dx: 'Gxkl04U3CNh', label: 'Quarantine Centers' },
     { dx: 'lxZ5cSmC9p1', label: 'Total Quarantined' },
     { dx: 'YOtibrmhr2c', label: 'Quarantined and Tested' },
-    { dx: 'udVNN3ErO9q', label: 'Quarantined and Tested Positive' },
-    // { dx: 'vpDs2i5Fc4r', label: 'Contacts of Travellers Tested at POEs' },
-    // { dx: 'z1cgvbudBq6', label: 'Contacts of Travellers Tested Positive' },
+    { dx: 'udVNN3ErO9q', label: 'Quarantined and Tested Positive' }
   ]);
   travellers.setPeriods(['THIS_YEAR']);
   travellers.setType('textValues');
 
-
-  // const quarantine = new Visualization();
-  // quarantine.setData({ rows: [] });
-  // quarantine.setD2(store.d2);
-  // quarantine.setDx([
-  //   // { dx: 'Wt8gxkBiJZ8', label: 'quarantine Registered at POEs' },
-
-  //   // { dx: 'wAOwXzZwZhs', label: 'Tested Positive at POEs' },
-  //   // { dx: 'vpDs2i5Fc4r', label: 'Contacts of quarantine Tested at POEs' },
-  //   // { dx: 'z1cgvbudBq6', label: 'Contacts of quarantine Tested Positive' },
-  // ]);
-  // quarantine.setPeriods(['THIS_YEAR']);
-  // quarantine.setType('textValues');
-
-
   const positiveAtPOE = new Visualization();
-  positiveAtPOE.setD2(store.d2);
   positiveAtPOE.setDx([
-    // { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
     { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive', color: '#7798BF' },
   ]);
   positiveAtPOE.setPeriods(['LAST_14_DAYS']);
   positiveAtPOE.setType('chart');
   positiveAtPOE.setChartType('column');
-  // positiveAtPOE.setOrgUnitGroups(['aobWYizg7hR'])
   positiveAtPOE.setFilterByPeriods(false)
-  // positiveAtPOE.setDimension(d3.width - 10, d3.height - 500);
-
 
   const positiveAtQuarantine = new Visualization();
-  positiveAtQuarantine.setD2(store.d2);
   positiveAtQuarantine.setDx([
-    // { dx: 'BM25rsG76xg', label: 'Travellers Tested at POEs' },
     { dx: 'udVNN3ErO9q', label: 'Quarantined Tested Positive', color: '#7798BF' },
   ]);
   positiveAtQuarantine.setPeriods(['LAST_14_DAYS']);
   positiveAtQuarantine.setType('chart');
   positiveAtQuarantine.setChartType('column');
-  // positiveAtQuarantine.setOrgUnitGroups(['aobWYizg7hR'])
   positiveAtQuarantine.setFilterByPeriods(false)
-  // positiveAtQuarantine.setDimension(d3.width - 10, d3.height - 500);
 
   const caseIncidence = new Visualization();
-  caseIncidence.setD2(store.d2);
   caseIncidence.setDx([
-    // { dx: 'aikFogLLKgR', label: 'Total Daily Testing Capacity', type: 'column', },
-    // { dx: 'W6jbNXRDbEI', label: 'Tested Done Today', type: 'column', },
     { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', color: '#96C5FF' },
     { dx: 'oNWIFSlbOyL', label: `7 Day's Averages`, type: 'spline', color: '#E53E3E', movingAverage: true },
     { dx: 'YUdNyrF8iYp', label: 'Cumulative Daily Cases', type: 'spline', yAxis: 1, color: 'orange', lineWidth: 4 },
   ]);
   caseIncidence.setPeriods(enumerateDates('2020-03-22'));
-  // caseIncidence.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
   caseIncidence.setFilterByPeriods(false);
   caseIncidence.setType('multiple');
-  // caseIncidence.setChartType('column');
-  // caseIncidence.setDimension(d1.width - 210, d1.height - 50)
 
   const testingSites = new Visualization();
-  testingSites.setD2(store.d2);
   testingSites.setData({ rows: [] });
 
   testingSites.setDx([
@@ -296,12 +252,7 @@ export const Dashboard = observer(() => {
       dx: 'aikFogLLKgR', label: 'Testing Capacity',
     },
     {
-      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Yesterday',
-      // child: {
-      //   dx: 'kLUxutfrUjZ',
-      //   chart: 'line',
-      //   strokeColor: '#17803A',
-      // }
+      dx: 'W6jbNXRDbEI', className: 'red', label: 'Tests Yesterday'
     },
     {
       dx: 'oNWIFSlbOyL', label: 'Positive Yesterday',
@@ -311,19 +262,17 @@ export const Dashboard = observer(() => {
   testingSites.setType('textValues');
 
   const testingCapacity = new Visualization();
-  testingCapacity.setD2(store.d2);
   testingCapacity.setDx([
-    { dx: 'aikFogLLKgR', label: 'Total Daily Testing Capacity', type: 'column', color: '#7798BF' },
+    { dx: 'aikFogLLKgR', label: 'Daily Testing Capacity', type: 'column', color: '#7798BF' },
     { dx: 'W6jbNXRDbEI', label: 'Tested Done Today', type: 'column', },
-    { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', },
-    { dx: 'Eh4jODrtZBT', label: 'Incidence', type: 'spline', yAxis: 1, color: '#90ee7e' },
+    { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', color: 'red' },
+    { dx: 'Eh4jODrtZBT', label: 'Positivity Rate', type: 'spline', yAxis: 1, color: '#90ee7e' },
   ]);
   testingCapacity.setPeriods(['LAST_14_DAYS']);
   testingCapacity.setFilterByPeriods(false);
   testingCapacity.setType('multiple');
 
   const map = new Visualization();
-  map.setD2(store.d2);
   map.setType('chart');
   map.setChartType('map');
   map.setFilterByOus(false);
@@ -357,11 +306,7 @@ export const Dashboard = observer(() => {
       });
       incidence.changeDxClass({
         'Eh4jODrtZBT': {}
-      })
-      dailyInfection.changeDxClass({
-        'VGnmnm4OC47': null,
-        'mF9tVYK4jEO': null,
-      })
+      });
       deaths.changeDxClass({
         'sVPjmX4NMFg': black,
         'bb6T8Nf4Ear': black,
@@ -379,13 +324,6 @@ export const Dashboard = observer(() => {
         'BM25rsG76xg': black,
         'wAOwXzZwZhs': redDark,
       });
-      // quarantine.changeDxClass({
-      //   'Gxkl04U3CNh': black,
-      //   'lxZ5cSmC9p1': black,
-      //   'YOtibrmhr2c': black,
-      //   'udVNN3ErO9q': redDark,
-      //   // 'wAOwXzZwZhs': black,
-      // });
       positiveAtPOE.changeDxClass({
         'wAOwXzZwZhs': null,
       });
@@ -422,7 +360,6 @@ export const Dashboard = observer(() => {
     heathWorkers,
     travellers,
     black,
-    dailyInfection,
     greenDarkProgress,
     incidence,
     poes,
@@ -430,7 +367,6 @@ export const Dashboard = observer(() => {
     redDark,
     redDarkProgress,
     testingCapacity,
-    // quarantine,
     positiveAtQuarantine
   ])
 
@@ -443,10 +379,8 @@ export const Dashboard = observer(() => {
       <div className="h-full grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 lg:grid-cols-6 grid-cols-1 md:grid-cols-2 gap-1">
         <DashboardItem element={caseIncidence} other={deaths} title="Case Incidence" className="row-span-1 col-span-1 lg:col-span-4" />
         <DashboardItem element={map} title="Case Distribution" className="row-span-2 col-span-1 lg:col-span-2" childClass="flex items-center justify-center text-center" />
-        <DashboardItem element={testingSites} other={testingCapacity} otherIsMain={true} title="Testing Sites and Capacity" className="row-span-1 col-span-1 lg:col-span-2" />
-        <DashboardItem element={dailyInfection} other={heathWorkers} title="Health Worker Infections" className="row-span-1 col-span-1 lg:col-span-2" />
-        {/* <DashboardItem element={travellers} title="POE Screening and Testing" className="row-span-1 col-span-1" childClass="flex justify-around text-center flex-col items-center" /> */}
-        {/* <DashboardItem element={quarantine} title="Quarantine" className="row-span-1 col-span-1" childClass="flex justify-around text-center flex-col items-center" /> */}
+        <DashboardItem element={testingSites} other={testingCapacity} otherIsMain={true} title="Testing Sites and Capacity" className="row-span-1 col-span-1 lg:col-span-3" />
+        <DashboardItem element={heathWorkers} title="Health Worker Infections" className="row-span-1 col-span-1 lg:col-span-1" childClass="flex flex-col justify-around items-center" />
       </div>
       <div className="bg-white flex items-center">
         <img src={whoLogo} style={{ height: 'auto', width: '100%', maxWidth: 160, marginLeft: 10 }} alt="" />
