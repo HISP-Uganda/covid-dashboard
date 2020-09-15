@@ -1,92 +1,8 @@
-import dayjs from 'dayjs';
+import React, { useEffect } from "react";
 import { observer } from "mobx-react";
-import React, { FC, useEffect } from "react";
-import useDimensions from "react-use-dimensions";
-import { useStore } from '../../Context';
-import { TItem, Visualization } from '../../models/Visualization';
-import { Chart } from "../visualizations/Chart";
-import { Map } from "../visualizations/Map";
-import { SingleValues } from "../visualizations/SingleValues";
-import { Tabular } from '../visualizations/Tabular';
-
-interface DashboardItemProps {
-  title: string;
-  element: TItem;
-  other?: TItem;
-  className?: string;
-  otherIsMain?: boolean;
-  childClass?: string;
-}
-
-interface ItemProps {
-  element: TItem;
-}
-
-export const Item: FC<ItemProps> = ({ element }) => {
-  switch (element.type) {
-    case "chart":
-      if (element.chartType === "map") {
-        return <Map element={element} />;
-      }
-      return <Chart element={element} />;
-    case "multiple":
-      return <Chart element={element} />;
-    case "table":
-      return <Tabular element={element} />
-    case "plainText":
-      return element.data;
-    case "textValues":
-      return <SingleValues element={element} />;
-  }
-}
-export const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other, className = '', childClass = "", otherIsMain = false }) => {
-  const [c1, d1] = useDimensions({ liveMeasure: false });
-  if (other && otherIsMain) {
-    other.setDimension(d1.width - 150, d1.height - 38)
-  } else if (other && !otherIsMain) {
-    element.setDimension(d1.width - 150, d1.height - 38);
-  } else {
-    element.setDimension(d1.width, d1.height - 38);
-  }
-  const store = useStore();
-  return <div ref={c1} className={className + ' ' + store.currentBackgrounds.cardBG}>
-    <div className={store.currentBackgrounds.header}>
-      <span>{title}</span>
-    </div>
-
-    {!!other ? otherIsMain ? <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr' }}>
-      <div className="flex flex-col justify-around items-center">
-        <Item element={element} />
-      </div>
-      <Item element={other} />
-    </div> : <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px' }}>
-        <Item element={element} />
-        <div className="flex flex-col justify-around items-center">
-          <Item element={other} />
-        </div>
-      </div> : <div className={childClass} style={{ height: element.height ? element.height : '' }}>
-        <Item element={element} />
-      </div>}
-  </div>
-
-})
-
-export const enumerateDates = (startDate: string) => {
-  const start = dayjs(startDate).toDate();
-  const lastDate = dayjs().toDate();
-
-  const year = start.getFullYear();
-  const month = start.getMonth();
-  let day = start.getDate();
-  const dates: Date[] = [start];
-
-  while (dates[dates.length - 1] < lastDate) {
-    dates.push(new Date(year, month, day++));
-  }
-  return dates.map((d: Date) => {
-    return dayjs(d).format('YYYYMMDD')
-  });
-};
+import { useStore } from "../../Context";
+import { Visualization } from "../../models/Visualization";
+import { DashboardItem } from "./Dashboard";
 
 export const Case = observer(() => {
   const store = useStore();
@@ -98,64 +14,49 @@ export const Case = observer(() => {
 
   const redDarkProgress = { strokeColor: '#ff5b5c', trailColor: '#fffbe9', textColor: '#f1f7fb' }
 
+  const testingAndContactTracing = new Visualization();
+  testingAndContactTracing.setData({ rows: [] });
+  testingAndContactTracing.setD2(store.d2);
+  testingAndContactTracing.setDx([
+    { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
+    {
+      dx: 'ubBVfdXXgWn', className: 'text-red-400 text-xl', label: 'Tested Positive', labelClassName: 'text-lg', child: {
+        dx: 'DhGtpi9ehqp',
+        chart: 'line',
+        strokeWidth: 8
+      }
+    },
+    { dx: 'LBcQjKkPukY', label: 'Contacts Identified' },
+    {
+      dx: 'rjlTjyYSr0d', label: 'Contacts Tested', child: {
+        dx: 'kLUxutfrUjZ',
+        chart: 'line'
+      }
+    },
+    {
+      dx: 'yK5LBdQeS5V', className: 'red', label: 'Positive Contacts', child: {
+        dx: 'upO9ps9ItXy',
+        chart: 'line'
+      }
+    },
+    { dx: 'tZ2Tfp9HjwG', label: 'RO', chart: 'circle', otherText: 'RO', removePercentage: true },
+
+  ]);
+  testingAndContactTracing.setPeriods(['TODAY']);
+  testingAndContactTracing.setType('textValues');
+
   const beds = new Visualization();
   beds.setData({ rows: [] });
   beds.setD2(store.d2);
   beds.setDx([
     { dx: 'QTLv7jKT6tU', label: 'Bed Capacity' },
     { dx: 'THaNba5GyJj', label: 'Beds Available', className: 'red' },
-    { dx: 'ghBNilqMiXq', label: 'Active Admissions', className: 'red' },
+    { dx: 'ghBNilqMiXq', label: 'Admissions', className: 'red' },
     { dx: 'v9r6qu7MAvk', chart: 'circle', otherText: 'Occupancy' }
   ]);
   beds.setPeriods(['TODAY']);
   beds.setType('textValues');
 
-  const tableData = new Visualization();
-  tableData.setData({ rows: [] });
-  tableData.setD2(store.d2);
-
-  tableData.setMultipleAnalysis([
-    {
-      dx: [{ dx: 'lY3zO9cXGuB', label: 'Currently active cases' },],
-      otherDimension: {
-        'ljsvLDy69V4': [
-          { dx: 'rSKvnpvGan1', name: 'Active Ugandans' },
-          { dx: 'nzeesuOi4Dt', name: 'Active Refugee' },
-          { dx: 'G9U9xGUZnjj', name: 'Active Foreign Residents' },
-          { dx: 'cBzBlkPz6Ny', name: 'Active Foreign Non-Residents' },
-        ]
-      }
-    }
-  ])
-
-  tableData.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
-  tableData.setFilterByDx(false);
-  tableData.setFilterByOus(false);
-  tableData.setPeriods(['THIS_YEAR']);
-  tableData.setType('table');
-
-  const testingAndContactTracing = new Visualization();
-  testingAndContactTracing.setData({ rows: [] });
-  testingAndContactTracing.setD2(store.d2);
-  testingAndContactTracing.setDx([
-    { dx: 'ubBVfdXXgWn', className: 'text-red-400 text-xl', label: 'Tested Positive', labelClassName: 'text-lg' },
-    { dx: 'ghBNilqMiXq', label: 'Active Admissions' },
-    { dx: 'sVPjmX4NMFg', label: 'Recoveries' },
-    { dx: 'bb6T8Nf4Ear', label: 'Total Deaths' },
-  ]);
-  testingAndContactTracing.setPeriods(['TODAY']);
-  testingAndContactTracing.setType('textValues');
-
-  const deaths = new Visualization();
-  deaths.setData({ rows: [] });
-  deaths.setD2(store.d2);
-  deaths.setDx([
-    { dx: 'sVPjmX4NMFg', label: 'Recoveries' },
-    { dx: 'bb6T8Nf4Ear', label: 'Total Deaths' },
-    { dx: 'ob2qpzPpniN', label: 'Fatality Rates', otherText: '%' },
-  ]);
-  deaths.setPeriods(['TODAY']);
-  deaths.setType('textValues');
   const newCasesAdmitted = new Visualization();
   newCasesAdmitted.setData({ rows: [] });
   newCasesAdmitted.setD2(store.d2)
@@ -170,6 +71,7 @@ export const Case = observer(() => {
   newCasesAdmitted.setFilterByDx(true);
   newCasesAdmitted.setFilterByOus(false);
   newCasesAdmitted.setFilterByPeriods(true);
+
 
   const newCasesAdmittedByAge = new Visualization();
   newCasesAdmittedByAge.setData({ rows: [] });
@@ -194,6 +96,7 @@ export const Case = observer(() => {
   newCasesAdmittedByAge.setFilterByOus(false);
   newCasesAdmittedByAge.setFilterByPeriods(true);
 
+
   const newCasesAdmittedLast14Days = new Visualization();
   newCasesAdmittedLast14Days.setData({ rows: [] });
   newCasesAdmittedLast14Days.setD2(store.d2)
@@ -206,6 +109,7 @@ export const Case = observer(() => {
   newCasesAdmittedLast14Days.setFilterByDx(false);
   newCasesAdmittedLast14Days.setFilterByOus(true);
   newCasesAdmittedLast14Days.setFilterByPeriods(false);
+
 
   const newCasesAdmittedConfirmed = new Visualization();
   newCasesAdmittedConfirmed.setData({ rows: [] });
@@ -221,6 +125,7 @@ export const Case = observer(() => {
   newCasesAdmittedConfirmed.setFilterByDx(true);
   newCasesAdmittedConfirmed.setFilterByOus(false);
   newCasesAdmittedConfirmed.setFilterByPeriods(true);
+
 
   const newCasesAdmittedConfirmedByAge = new Visualization();
   newCasesAdmittedConfirmedByAge.setData({ rows: [] });
@@ -245,6 +150,7 @@ export const Case = observer(() => {
   newCasesAdmittedConfirmedByAge.setFilterByOus(true);
   newCasesAdmittedConfirmedByAge.setFilterByPeriods(true);
 
+
   const newCasesAdmittedConfirmedByNationality = new Visualization();
   newCasesAdmittedConfirmedByNationality.setData({ rows: [] });
   newCasesAdmittedConfirmedByNationality.setD2(store.d2)
@@ -266,6 +172,7 @@ export const Case = observer(() => {
   newCasesAdmittedConfirmedByNationality.setFilterByDx(true);
   newCasesAdmittedConfirmedByNationality.setFilterByOus(true);
   newCasesAdmittedConfirmedByNationality.setFilterByPeriods(true);
+
 
   const newCasesAdmittedByCTU = new Visualization();
   newCasesAdmittedByCTU.setData({ rows: [] });
@@ -306,83 +213,48 @@ export const Case = observer(() => {
   admittedBySeverity.setFilterByPeriods(true);
 
 
-  const admissions = new Visualization();
-  admissions.setData({ rows: [] });
-  admissions.setD2(store.d2);
-  admissions.setDx([
-    { dx: 'C3a2t1kIppc', label: 'Beds' },
-    { dx: 'oK76O9uCtEe', label: 'Active Admissions' },
-  ]);
-  admissions.setPeriods(['THIS_YEAR']);
-  admissions.setType('chart');
-  admissions.setChartType('column');
-  admissions.setOrgUnitGroups(['Ej1BuUrJ9Rm']);
-  admissions.setFilterByDx(false);
-  admissions.setFilterByOus(false);
-  admissions.setFilterByPeriods(true);
-
   useEffect(() => {
     if (!store.isLight) {
       beds.changeDxClass({
         'QTLv7jKT6tU': black,
         'THaNba5GyJj': black,
-        'ghBNilqMiXq': black,
+        'ghBNilqMiXq': redDark,
         'v9r6qu7MAvk': redDarkProgress,
       });
       testingAndContactTracing.changeDxClass({
         'CemgWPzdnUf': black,
-        'ubBVfdXXgWn': { ...redDark },
+        'ubBVfdXXgWn': { ...redDark, child: redDarkProgress },
         'LBcQjKkPukY': black,
-        'rjlTjyYSr0d': { ...black },
-        'yK5LBdQeS5V': { ...redDark },
+        'rjlTjyYSr0d': { ...black, child: greenDarkProgress },
+        'yK5LBdQeS5V': { ...redDark, child: redDarkProgress },
         'tZ2Tfp9HjwG': redDarkProgress,
-        'sVPjmX4NMFg': black,
-        'bb6T8Nf4Ear': { ...redDark },
-        'ghBNilqMiXq': { ...black }
       });
 
-      newCasesAdmittedByAge.changeDxClass({
-        'BVRRNsSF7nF': null,
-        'twwLRACvyrK': null,
-      });
     } else {
     }
   }, [
     store.isLight,
-    testingAndContactTracing,
     beds,
-    deaths,
+    testingAndContactTracing,
     black,
     greenDarkProgress,
     redDark,
-    redDarkProgress,
-    newCasesAdmittedByAge,
-    newCasesAdmitted
-  ])
-
-  return (
-    <div className={`dashboard2`}>
-      <div className="grid grid-rows-1 grid-cols-6 gap-1 flex-col">
-        <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4" title="Testing and Contact Tracing" childClass="flex justify-around text-center" />
-        <DashboardItem element={beds} title="Admissions and Bed Occupancy" className="row-span-1 col-span-2" childClass="flex justify-around text-center" />
-      </div>
-      <div className="grid grid-rows- grid-cols-1">
-        <DashboardItem element={admissions} title="Currently admitted suspect or probable cases today by CTU" className="row-span-1 col-span-1" />
-        {/* <DashboardItem element={newCasesAdmittedByAge} title="New Cases admitted yesterday by age group" /> */}
-        {/* <DashboardItem element={newCasesAdmittedConfirmedByAge} title="Currently admitted confirmed cases today by Age group" /> */}
-        {/* <DashboardItem element={newCasesAdmittedConfirmedByNationality} title="Currently admitted confirmed cases today by Nationlity Status" /> */}
-        {/* <DashboardItem element={newCasesAdmittedByCTU} title="Currently admitted suspect or probable cases today by CTU" /> */}
-        {/* <DashboardItem element={admittedBySeverity} title="Currently admitted suspect or probable cases today by CTU" /> */}
-        {/* <div className="row-span-2 col-span-1"> */}
-        {/* <DashboardItem element={newCasesAdmittedByAge} title="New Cases admitted yesterday by age group" /> */}
-        {/* <DashboardItem element={newCasesAdmittedLast14Days} title="New Cases admitted last 14 days" /> */}
-        {/* <DashboardItem element={newCasesAdmittedConfirmed} title="Currently admitted confirmed cases today by CTU and Sex" /> */}
-        {/* </div> */}
-      </div>
-
-      <div className="grid grid-rows-1 grid-cols-1">
-        <DashboardItem element={tableData} title="Currently admitted suspect or probable cases today by CTU" className="row-span-1 col-span-1" />
-      </div>
+    redDarkProgress
+  ]);
+  return <div className={`dashboard h-full`}>
+    <div className="grid grid-rows-1 grid-cols-6 gap-1 flex-col">
+      <DashboardItem element={testingAndContactTracing} className="row-span-1 col-span-4" title="Testing and Contact Tracing" childClass="flex justify-around text-center" />
+      <DashboardItem element={beds} title="Admissions and Bed Occupancy" className="row-span-1 col-span-2" childClass="flex justify-around text-center" />
     </div>
-  );
+    <div className="h-full grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 lg:grid-cols-6 grid-cols-1 md:grid-cols-2 gap-1">
+      <DashboardItem element={newCasesAdmitted} title="New Cases admitted yesterday by Sex,CTU" />
+      {/* <DashboardItem element={newCasesAdmittedByAge} title="New Cases admitted yesterday by age group" />
+      <DashboardItem element={newCasesAdmittedLast14Days} title="New Cases admitted last 14 days" />
+      <DashboardItem element={newCasesAdmittedConfirmed} title="Currently admitted confirmed cases today by CTU and Sex" />
+      <DashboardItem element={newCasesAdmittedConfirmedByAge} title="Currently admitted confirmed cases today by Age group" />
+      <DashboardItem element={newCasesAdmittedConfirmedByNationality} title="Currently admitted confirmed cases today by Nationlity Status" />
+      <DashboardItem element={newCasesAdmittedByCTU} title="Currently admitted suspect or probable cases today by CTU" />
+      <DashboardItem element={admittedBySeverity} title="Currently admitted suspect or probable cases today by CTU" /> */}
+    </div>
+  </div>;
 });

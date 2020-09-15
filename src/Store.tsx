@@ -11,7 +11,8 @@ class Store {
   @observable userOrgUnits: any = [];
   @observable selectedOrgUnit: any;
   @observable isLight: boolean = false;
-  @observable refreshRate = 20000;
+  @observable refreshRate = 200000;
+  @observable isInDhis2 = true;
 
   @action setD2 = async (d2: any) => (this.d2 = d2);
   @action setIsLight = (val: boolean) => this.isLight = val;
@@ -19,14 +20,26 @@ class Store {
 
   @action
   loadUserOrgUnits = async () => {
+    const api = this.d2.Api.getApi();
     try {
-      const { data: { organisationUnits } } = await axios.get(`${baseUrl}/query`, {
-        params: {
-          path: 'me.json',
-          fields: "organisationUnits[id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty]",
-        }
-      });
-      this.userOrgUnits = organisationUnits;
+      if (this.isInDhis2) {
+        const { organisationUnits } = await api.get("me.json", {
+          fields: "organisationUnits[id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty]"
+        });
+        this.userOrgUnits = organisationUnits;
+
+      } else {
+        const { data: { organisationUnits } } = await axios.get(`${baseUrl}/query`, {
+          params: {
+            path: 'me.json',
+            fields: "organisationUnits[id,path,name,level,leaf,displayShortName~rename(displayName),children::isNotEmpty]",
+          }
+        });
+        this.userOrgUnits = organisationUnits;
+      }
+
+
+
       this.selectedOrgUnit = this.userOrgUnits[0].id;
     } catch (e) {
       console.log(e);
@@ -36,21 +49,41 @@ class Store {
   @action
   loadOrganisationUnitsChildren = async (parent: string) => {
     try {
-      const { data: { data: { organisationUnits } } } = await axios.get(`${baseUrl}/query`, {
-        params: {
-          path: 'organisationUnits.json',
+
+      if (this.isInDhis2) {
+        const api = this.d2.Api.getApi();
+
+        const { organisationUnits } = await api.get("organisationUnits.json", {
           filter: `id:in:[${parent}]`,
           paging: "false",
           fields: "children[id,name,path,leaf]",
-        }
-      });
-      const found = organisationUnits.map((unit: any) => {
-        return unit.children.map((child: any) => {
-          return { ...child, pId: parent };
         });
-      });
-      const all = flatten(found);
-      this.userOrgUnits = [...this.userOrgUnits, ...all];
+
+        const found = organisationUnits.map((unit: any) => {
+          return unit.children.map((child: any) => {
+            return { ...child, pId: parent };
+          });
+        });
+        const all = flatten(found);
+        this.userOrgUnits = [...this.userOrgUnits, ...all];
+      } else {
+        const { data: { data: { organisationUnits } } } = await axios.get(`${baseUrl}/query`, {
+          params: {
+            path: 'organisationUnits.json',
+            filter: `id:in:[${parent}]`,
+            paging: "false",
+            fields: "children[id,name,path,leaf]",
+          }
+        });
+        const found = organisationUnits.map((unit: any) => {
+          return unit.children.map((child: any) => {
+            return { ...child, pId: parent };
+          });
+        });
+        const all = flatten(found);
+        this.userOrgUnits = [...this.userOrgUnits, ...all];
+      }
+
     } catch (e) {
       console.log(e);
     }

@@ -3,10 +3,19 @@
   grid-template-rows: 64px 6px 1fr;
   /* grid-row-gap: 5px; */
 }
+.ant-table-tbody > tr.ant-table-row-level-1:hover > td {
+  background: unset !important;
+}
 
 .dashboard1 {
   display: grid;
   grid-template-rows: 150px 1fr 64px;
+  grid-row-gap: 5px;
+}
+
+.dashboard2 {
+  display: grid;
+  grid-template-rows: 150px 1fr;
   grid-row-gap: 5px;
 }
 
@@ -98,3 +107,24 @@
   font-size: 28px;
   font-family: Arial;
 }
+.viz {
+  display: grid;
+  /* grid-template-rows: repeat(6, 1fr); */
+  grid-template-columns: repeat(2, 1fr);
+}
+
+thead[class*="ant-table-thead"] th {
+  background-color: #2d3748 !important;
+  color: white !important;
+  padding:10px;
+  font-size: large;
+}
+
+.ant-table-thead>tr.ant-table-row-hover:not(.ant-table-expanded-row)>td,
+.ant-table-tbody>tr.ant-table-row-hover:not(.ant-table-expanded-row)>td,
+.ant-table-thead>tr:hover:not(.ant-table-expanded-row)>td,
+.ant-table-tbody>tr:hover:not(.ant-table-expanded-row)>td {
+    background: unset;
+}
+
+

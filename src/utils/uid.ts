@@ -42,4 +42,4 @@ export function generateUid() {
   return randomChars;
 }
 
-export const BASE_URL = 'https://aau.dev.hispuganda.org'
+export const BASE_URL = 'http://localhost:3001'

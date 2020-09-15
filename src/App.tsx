@@ -37,18 +37,18 @@ export const App = observer(() => {
         <div style={{ marginLeft: 'auto', display: 'flex' }}>
           <ASwitch onChange={store.setIsLight} checked={store.isLight} />
           <a href="https://eidsr.health.go.ug/dhis-web-dashboard/" style={{ marginLeft: 20, color: 'white', fontWeight: 'bold' }}>eIDSR DASHBOARD</a>
-
         </div>
         <Menu mode="horizontal" theme="dark" style={{ background: 'none', marginLeft: 'auto' }} className="ant-menu-item-selected">
           <Menu.Item key="mail" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/`}>Summary</Link>
           </Menu.Item>
-          <Menu.Item key="lab" className="modified-item">
-            <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/lab`}>Laboratory Testing</Link>
-          </Menu.Item>
           <Menu.Item key="surveillance" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/surveillance`}>Surveillance</Link>
           </Menu.Item>
+          <Menu.Item key="lab" className="modified-item">
+            <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/lab`}>Laboratory Testing</Link>
+          </Menu.Item>
+
           <Menu.Item key="case-management" className="modified-item">
             <Link style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }} to={`/case-management`}>Case Management</Link>
           </Menu.Item>

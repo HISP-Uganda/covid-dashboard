@@ -1,9 +1,8 @@
-import { flatten, fromPairs, range, reduce, isArray } from 'lodash';
+import { flatten, fromPairs, groupBy, isArray, isEmpty, range, reduce } from 'lodash';
 import { action, computed, observable } from "mobx";
-import { generateUid, BASE_URL } from "../utils/uid";
-import axios from "axios";
-
-const baseUrl = BASE_URL;
+import React from 'react';
+import { CaseList } from '../components/CaseList';
+import { generateUid } from "../utils/uid";
 
 function sum(numbers: number[]) {
   return reduce(numbers, (a, b) => a + b, 0);
@@ -13,7 +12,10 @@ function average(numbers: number[]) {
   return sum(numbers) / (numbers.length || 1);
 }
 
+
+
 export class Visualization {
+  @observable d2: any;
   @observable height: number = 0;
   @observable width: number = 0;
   @observable x: number = 0;
@@ -34,21 +36,31 @@ export class Visualization {
   @observable chartBackground: string = '';
   @observable editable: boolean = process.env.NODE_ENV === "development";
 
-  @observable dx: any = {};
+  @observable dx: any[] = [];
   @observable periods: string[] = [];
   @observable ou: string[] = [];
+  @observable otherDimension: any = {};
+  @observable otherDimensionFilter: any = {};
   @observable filterByOus: boolean = true;
   @observable filterByPeriods: boolean = true;
+  @observable filterByDx: boolean = false;
   @observable geoJson: any;
   @observable metadata: any = {}
   @observable orgUnitGroups: string[] = [];
   @observable movingAverage: boolean = false;
+  @observable multipleAnalysis: any[] = [];
+  @observable hChart: any = undefined;
 
+  @action setD2 = (val: any) => this.d2 = val;
+  @action setHChart = (val: any) => this.hChart = val;
   @action setLoading = (val: boolean) => (this.loading = val);
   @action setDx = (dx: any[]) => (this.dx = dx);
   @action setOu = (ou: string[]) => (this.ou = ou);
   @action setPeriods = (periods: string[]) => (this.periods = periods);
   @action setFilterByOus = (val: boolean) => (this.filterByOus = val);
+  @action setOtherDimension = (val: any) => (this.otherDimension = val);
+  @action setOtherDimensionFilter = (val: any) => (this.otherDimensionFilter = val);
+  @action setFilterByDx = (val: boolean) => (this.filterByDx = val);
   @action setFilterByPeriods = (val: boolean) => (this.filterByPeriods = val);
   @action setChartType = (val: string) => (this.chartType = val);
   @action setType = (val: string) => (this.type = val);
@@ -61,18 +73,18 @@ export class Visualization {
   @action setMetadata = (val: any) => (this.metadata = val);
   @action setOrgUnitGroups = (val: any) => this.orgUnitGroups = val;
   @action changeChartBackground = (val: any) => this.chartBackground = val;
+  @action setMultipleAnalysis = (val: any[]) => this.multipleAnalysis = val;
   @action setDimension = (width: number, height: number) => {
     this.width = width;
     this.height = height;
   };
 
   @action loadOrgUnitGroups = async () => {
-    const { data: { organisationUnitGroups } } = await axios.get(`${baseUrl}/query`, {
-      params: {
-        path: 'organisationUnitGroups.json',
-        fields: "organisationUnits",
-        filter: `id:in:[${this.orgUnitGroups.join(',')}]`
-      }
+    const api = this.d2.Api.getApi();
+    const { organisationUnitGroups } = await api.get(`organisationUnitGroups.json`, {
+      path: 'organisationUnitGroups.json',
+      fields: "organisationUnits",
+      filter: `id:in:[${this.orgUnitGroups.join(',')}]`
     });
     const units = organisationUnitGroups.map(({ organisationUnits }: any) => {
       return organisationUnits.map((ou: any) => ou.id)
@@ -92,22 +104,100 @@ export class Visualization {
     if (loading) {
       this.setLoading(true);
     }
-    if (this.dx.length > 0 && this.periods.length > 0 && this.ou.length > 0) {
-      const realDimensions = this.dx.map((d: any) => {
-        const child = d.child ? [d.child.dx] : [];
-        return [d.dx, ...child]
-      });
+    if (this.multipleAnalysis.length > 0) {
+      const multiRequest = this.multipleAnalysis.map((analysis: any) => {
+        const realDimensions = analysis.dx.map((d: any) => {
+          const child = d.child ? [d.child.dx] : [];
+          return [d.dx, ...child]
+        });
 
-      const { data } = await axios.post(`${baseUrl}/analytics`, {
-        dx: flatten(realDimensions),
-        pe: this.periods,
-        ou: this.ou,
-        filterByOus: this.filterByOus,
-        filterByPeriods: this.filterByPeriods
-      });
+        let req = new this.d2.analytics.request()
+          .withSkipData(false)
+          .withSkipRounding(true);
 
-      if (!isArray(data)) {
-        this.setData(data)
+        if (this.filterByDx) {
+          req.addDataFilter(flatten(realDimensions))
+        } else {
+          req.addDataDimension(flatten(realDimensions))
+        }
+
+        if (!isEmpty(analysis.otherDimension)) {
+          Object.entries(analysis.otherDimension).forEach(([id, vals]) => {
+            const dimensions: any = vals
+            req.addDimension(id, dimensions.map((x: any) => x.dx))
+          })
+        }
+        if (!isEmpty(analysis.otherDimensionFilter)) {
+          Object.entries(analysis.otherDimension).forEach(([id, vals]) => {
+            req.addFilter(id, vals)
+          })
+        }
+
+        if (this.filterByOus) {
+          req = req.addOrgUnitFilter(this.ou);
+        } else {
+          req = req.addOrgUnitDimension(this.ou);
+        }
+
+        if (this.filterByPeriods) {
+          req = req.addPeriodFilter(this.periods);
+        } else {
+          req = req.addPeriodDimension(this.periods);
+        }
+        return this.d2.analytics.aggregate.get(req)
+      })
+
+      const allData = await Promise.all(multiRequest);
+
+      this.setData(this.setData(allData))
+    } else {
+
+      if (this.dx.length > 0 && this.periods.length > 0 && this.ou.length > 0) {
+        const realDimensions = this.dx.map((d: any) => {
+          const child = d.child ? [d.child.dx] : [];
+          return [d.dx, ...child]
+        });
+
+        let req = new this.d2.analytics.request()
+          .withSkipData(false)
+          .withSkipRounding(true);
+
+        if (this.filterByDx) {
+          req.addDataFilter(flatten(realDimensions))
+        } else {
+          req.addDataDimension(flatten(realDimensions))
+        }
+
+        if (!isEmpty(this.otherDimension)) {
+          Object.entries(this.otherDimension).forEach(([id, vals]) => {
+            const dimensions: any = vals
+            req.addDimension(id, dimensions.map((x: any) => x.dx))
+          })
+        }
+
+        if (!isEmpty(this.otherDimensionFilter)) {
+          Object.entries(this.otherDimension).forEach(([id, vals]) => {
+            req.addFilter(id, vals)
+          })
+        }
+
+        if (this.filterByOus) {
+          req = req.addOrgUnitFilter(this.ou);
+        } else {
+          req = req.addOrgUnitDimension(this.ou);
+        }
+
+        if (this.filterByPeriods) {
+          req = req.addPeriodFilter(this.periods);
+        } else {
+          req = req.addPeriodDimension(this.periods);
+        }
+
+        const data = await this.d2.analytics.aggregate.get(req);
+
+        if (!isArray(data)) {
+          this.setData(data)
+        }
       }
     }
     if (loading) {
@@ -117,9 +207,36 @@ export class Visualization {
 
   @action fetchGeoJson = async (unit: string) => {
     if (unit) {
-      const { data: { ous, geoJson } } = await axios.get(`${baseUrl}/map`);
-      this.geoJson = geoJson;
-      this.setOu(ous);
+      const api = this.d2.Api.getApi();
+      const { organisationUnits } = await api.get(`organisationUnits`, {
+        level: 3,
+        paging: false,
+        fields: "id,name,geometry",
+      });
+
+      const features = organisationUnits
+        .map((child: any) => {
+          if (!child.geometry || child.geometry.type === "Point") {
+            return null;
+          }
+          return {
+            properties: {
+              id: child.id,
+              name: child.name,
+            },
+            type: "Feature",
+            geometry: child.geometry,
+          };
+        })
+        .filter((x: any) => {
+          return !!x;
+        });
+
+      this.geoJson = {
+        type: "FeatureCollection",
+        features,
+      };
+      this.setOu(organisationUnits.map((c: any) => c.id));
       this.filterByOus = false;
     }
   };
@@ -163,6 +280,9 @@ export class Visualization {
         subtitle: {
           text: `<span>${this.subtitle}</span>`,
         },
+        exporting: {
+          enabled: false
+        },
         colors: ['#7798BF', 'orangered'],
         legend: {
           backgroundColor: '#EBEFF9'
@@ -175,53 +295,127 @@ export class Visualization {
         width: this.width,
         backgroundColor: this.chartBackground
       };
-      let plotOptions = {};
+      let plotOptions = {
+        column: {
+          dataLabels: {
+            enabled: true
+          }
+        },
+        bar: {
+          dataLabels: {
+            enabled: true
+          }
+        }
+      };
       let tooltip: any = {};
-      if (this.chartType === "column" && this.data) {
+      if (this.chartType === "column" && this.data && this.data.metaData) {
         chart = { ...chart, type: this.chartType };
         let categories: any[] = [];
+
         if (!this.filterByOus) {
           categories = this.data.metaData.dimensions.ou.map((p: string) => {
             return this.data.metaData.items[p].name;
           });
-        } else {
+        } else if (!this.filterByPeriods) {
           categories = this.data.metaData.dimensions.pe.map((p: string) => {
             return this.data.metaData.items[p].name;
           });
         }
 
-        series = this.dx.map((d: any) => {
-          let data;
-          if (!this.filterByOus) {
-            data = this.data.metaData.dimensions.ou.map((p: string) => {
+        if (!isEmpty(this.otherDimension) && this.filterByOus && this.filterByDx && this.filterByPeriods) {
+          const vals: any[] = Object.entries(this.otherDimension)[0];
+          categories = vals[1].map((dim: any) => dim.name);
+        }
+
+        if (!isEmpty(this.otherDimension)) {
+          const vals: any[] = Object.entries(this.otherDimension)[0];
+          const firstDim = vals[0]
+          const ouIndex = this.data.headers.findIndex((h: any) => h.name === 'ou');
+          const peIndex = this.data.headers.findIndex((h: any) => h.name === 'pe');
+          const dimIndex = this.data.headers.findIndex((h: any) => h.name === firstDim);
+          if (this.filterByDx && this.filterByPeriods && this.filterByOus) {
+            const currentData = vals[1].map((dim: any) => {
               const dy = this.data.rows.find((r: any[]) => {
-                return d.dx === r[0] && p === r[1];
+                return dim.dx === r[0];
               });
               if (dy) {
-                return Number(dy[2]);
+                return Number(dy[1]);
               } else {
                 return 0;
               }
             });
+            series = [{
+              name: '',
+              data: currentData
+            }]
           } else {
-            data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
-              const dy = this.data.rows.find((r: any[]) => {
-                return d.dx === r[0] && p === r[1];
-              });
-              if (dy) {
-                return Number(dy[2]);
-              } else {
-                return 0;
+            series = vals[1].map((dim: any) => {
+              let data;
+              if (!this.filterByOus) {
+                data = this.data.metaData.dimensions.ou.map((p: string) => {
+                  const dy = this.data.rows.find((r: any[]) => {
+                    return dim.dx === r[dimIndex] && p === r[ouIndex];
+                  });
+                  if (dy) {
+                    return Number(dy[2]);
+                  } else {
+                    return 0;
+                  }
+                });
+              } else if (!this.filterByOus) {
+                data = this.data.metaData.dimensions.pe.map((p: string) => {
+                  const dy = this.data.rows.find((r: any[]) => {
+                    return dim.dx === r[dimIndex] && p === r[peIndex];
+                  });
+                  if (dy) {
+                    return Number(dy[2]);
+                  } else {
+                    return 0;
+                  }
+                });
               }
+              let result: any = { name: dim.name, data }
+              if (dim.color) {
+                result = { ...result, color: dim.color }
+              }
+              return result;
             });
           }
 
-          let result: any = { name: d.label, data }
-          if (d.color) {
-            result = { ...result, color: d.color }
-          }
-          return result;
-        });
+        } else {
+          series = this.dx.map((d: any) => {
+            let data;
+            if (!this.filterByOus) {
+              data = this.data.metaData.dimensions.ou.map((p: string) => {
+                const dy = this.data.rows.find((r: any[]) => {
+                  return d.dx === r[0] && p === r[1];
+                });
+                if (dy) {
+                  return Number(dy[2]);
+                } else {
+                  return 0;
+                }
+              });
+            } else {
+              data = this.data.metaData.dimensions.pe.map((p: string, index: number) => {
+                const dy = this.data.rows.find((r: any[]) => {
+                  return d.dx === r[0] && p === r[1];
+                });
+                if (dy) {
+                  return Number(dy[2]);
+                } else {
+                  return 0;
+                }
+              });
+            }
+
+            let result: any = { name: d.label, data }
+            if (d.color) {
+              result = { ...result, color: d.color }
+            }
+            return result;
+          });
+        }
 
         xAxis = {
           categories,
@@ -254,7 +448,70 @@ export class Visualization {
           }],
           series,
         };
-      } else if (["line", "spline"].indexOf(this.chartType) !== -1 && this.data) {
+      } else if (this.chartType === 'pie' && this.data && this.data.metaData) {
+        if (!isEmpty(this.otherDimension)) {
+          const vals: any[] = Object.entries(this.otherDimension)[0];
+          const currentData = vals[1].map((dim: any) => {
+            const dy = this.data.rows.find((r: any[]) => {
+              return dim.dx === r[0];
+            });
+            if (dy) {
+              return {
+                name: dim.name,
+                y: Number(dy[1]),
+                sliced: true,
+                selected: true
+              };
+            } else {
+              return {
+                name: dim.name,
+                y: 0,
+                sliced: true,
+                selected: true
+              };
+            }
+          });
+
+          series = [{
+            name: 'RRR',
+            data: currentData
+          }]
+        }
+        fullChart = {
+          chart: {
+            title: {
+              text: `<span style="font-size: 20px;font-weight:bolder">${this.title}</span>`,
+            },
+            subtitle: {
+              text: `<span>${this.subtitle}</span>`,
+            },
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            backgroundColor: this.chartBackground,
+            plotShadow: false,
+            type: 'pie'
+          },
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+          },
+          accessibility: {
+            point: {
+              valueSuffix: '%'
+            }
+          },
+          plotOptions: {
+            pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+              }
+            }
+          },
+          series
+        }
+      } else if (["line", "spline"].indexOf(this.chartType) !== -1 && this.data && this.data.metaData) {
         let categories: any[] = [];
         chart = { ...chart, type: this.chartType };
         if (!this.filterByPeriods) {
@@ -315,9 +572,7 @@ export class Visualization {
 
         fullChart = {
           ...fullChart,
-
           chart,
-
           plotOptions,
           tooltip,
           xAxis,
@@ -370,7 +625,6 @@ export class Visualization {
       }
       return fullChart;
     } else if (this.type === "multiple") {
-
       if (this.data) {
         let categories: any[] = [];
         if (!this.filterByOus) {
@@ -426,15 +680,6 @@ export class Visualization {
               } else {
                 return 0;
               }
-
-              // const dy = this.data.rows.find((r: any[]) => {
-              //   return d.dx === r[0] && p === r[1];
-              // });
-              // if (dy) {
-              //   return Number(dy[2]);
-              // } else {
-              //   return 0;
-              // }
             });
           }
           let result: any = {
@@ -464,7 +709,12 @@ export class Visualization {
             zoomType: 'xy',
             height: this.height,
             width: this.width,
-            backgroundColor: this.chartBackground
+            backgroundColor: this.chartBackground,
+            events: {
+              load: (e: any) => {
+                this.setHChart(e.target)
+              }
+            }
           },
           xAxis: [{
             categories,
@@ -477,6 +727,21 @@ export class Visualization {
           }],
           credits: { enabled: false },
           plotOptions: {
+            column: {
+              dataLabels: {
+                enabled: true
+              }
+            },
+            bar: {
+              dataLabels: {
+                enabled: true
+              }
+            },
+            line: {
+              dataLabels: {
+                enabled: true
+              }
+            },
             series: {
               pointPadding: 0,
               groupPadding: 0,
@@ -567,6 +832,97 @@ export class Visualization {
           }]
         });
         return fromPairs(dxes);
+      }
+    } else if (this.type === "table" && this.data && this.data.length > 0) {
+      let dataSource: any = [];
+      let columns: any = [];
+      if (this.multipleAnalysis.length > 0) {
+        let data = this.data.map((a: any, i: number) => {
+          return a.rows.map((r: any) => {
+            return Object.assign.apply(
+              {},
+              a.headers.map((v: any, i: number) => ({
+                [v["name"]]: r[i],
+              }))
+            );
+          });
+        });
+
+        data = groupBy(flatten(data), 'ou');
+
+        columns = this.multipleAnalysis.map((analysis: any) => {
+          return analysis.dx.map((indicator: any) => {
+            const [, disagregation]: any = Object.entries(analysis.otherDimension)[0];
+            const disagg = disagregation.map((dis: any) => {
+              return dis.name
+            });
+            return disagg;
+          })
+        });
+
+        const allColumns = ['Treatment Center', ...flatten(flatten(columns))];
+        const width = ((window.outerWidth - 150) / allColumns.length);
+
+        columns = allColumns.map((c: any, i: number) => {
+          if (i === 0) {
+            return {
+              fixed: 'left',
+              className: 'bg-gray-800',
+              width,
+              title: c,
+              dataIndex: c,
+              key: c,
+            }
+          }
+          return {
+            align: 'center',
+            title: c,
+            dataIndex: c,
+            width,
+            key: c,
+          }
+        });
+
+        columns = [...columns, {
+          title: 'Options',
+          key: 'action',
+          align: 'center',
+          width: 150,
+          className: 'bg-gray-800',
+          render: () => <CaseList />,
+        },]
+
+        dataSource = this.data[0].metaData.dimensions.ou.map((p: string) => {
+          const currentData = data[this.data[0].metaData.items[p].uid]
+          const dtt = this.multipleAnalysis.map((analysis: any) => {
+            return analysis.dx.map((indicator: any) => {
+              const [cat, disagregation]: any = Object.entries(analysis.otherDimension)[0];
+              const disagg = disagregation.map((dis: any) => {
+                if (currentData) {
+                  const dt = currentData.find((cd: any) => {
+                    return cd.dx === indicator.dx && cd[cat] === dis.dx
+                  });
+                  if (dt) {
+                    return [dis.name, dt.value]
+                  }
+                }
+                return [dis.name, 0]
+              });
+              return disagg;
+            })
+          });
+          return { ...fromPairs(flatten(flatten(dtt))), 'Treatment Center': this.data[0].metaData.items[p].name };
+        });
+      } else {
+        // const ouIndex = this.data.headers.findIndex((h: any) => h.name === 'ou');
+        // const peIndex = this.data.headers.findIndex((h: any) => h.name === 'pe');
+        dataSource = this.data.metaData.dimensions.ou.map((p: string) => {
+          return { key: this.data.metaData.items[p].uid, name: this.data.metaData.items[p].name }
+        });
+      }
+      return {
+        dataSource,
+        columns
       }
     }
     return this.data;

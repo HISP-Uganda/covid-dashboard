@@ -1,4 +1,3 @@
-// import { Select } from "antd";
 import dayjs from 'dayjs';
 import { observer } from "mobx-react";
 import React, { useEffect, FC } from "react";
@@ -25,7 +24,7 @@ interface ItemProps {
   element: TItem;
 }
 
-const Item: FC<ItemProps> = ({ element }) => {
+export const Item: FC<ItemProps> = ({ element }) => {
   switch (element.type) {
     case "chart":
       if (element.chartType === "map") {
@@ -40,9 +39,8 @@ const Item: FC<ItemProps> = ({ element }) => {
       return <SingleValues element={element} />;
   }
 }
-// const { Option } = Select;
 export const DashboardItem: FC<DashboardItemProps> = observer(({ element, title, other, className = '', childClass = "", otherIsMain = false }) => {
-  const [c1, d1] = useDimensions({ liveMeasure: true });
+  const [c1, d1] = useDimensions({ liveMeasure: false });
   if (other && otherIsMain) {
     other.setDimension(d1.width - 150, d1.height - 38)
   } else if (other && !otherIsMain) {
@@ -102,6 +100,7 @@ export const Dashboard = observer(() => {
 
   const beds = new Visualization();
   beds.setData({ rows: [] });
+  beds.setD2(store.d2);
   beds.setDx([
     { dx: 'QTLv7jKT6tU', label: 'Bed Capacity' },
     { dx: 'THaNba5GyJj', label: 'Beds Available', className: 'red' },
@@ -113,6 +112,7 @@ export const Dashboard = observer(() => {
 
   const testingAndContactTracing = new Visualization();
   testingAndContactTracing.setData({ rows: [] });
+  testingAndContactTracing.setD2(store.d2);
   testingAndContactTracing.setDx([
     { dx: 'CemgWPzdnUf', label: 'Total Tests Done' },
     {
@@ -143,6 +143,7 @@ export const Dashboard = observer(() => {
 
   const poes = new Visualization();
   poes.setData({ rows: [] });
+  poes.setD2(store.d2);
   poes.setDx([
     { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
     { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
@@ -152,6 +153,7 @@ export const Dashboard = observer(() => {
   poes.setType('textValues');
 
   const incidence = new Visualization();
+  incidence.setD2(store.d2);
   incidence.setDx([
     { dx: 'Eh4jODrtZBT', label: 'Positivity Rate', color: '#1B3A50' },
   ]);
@@ -161,6 +163,7 @@ export const Dashboard = observer(() => {
   incidence.setFilterByPeriods(false);
 
   const dailyInfection = new Visualization();
+  dailyInfection.setD2(store.d2);
   dailyInfection.setDx([
     { dx: 'VGnmnm4OC47', label: 'Health Workers Tested' },
     { dx: 'Gx06sMgGsbv', label: 'Health Workers Tested Positive' },
@@ -171,7 +174,7 @@ export const Dashboard = observer(() => {
   dailyInfection.setChartType('column');
   const deaths = new Visualization();
   deaths.setData({ rows: [] });
-
+  deaths.setD2(store.d2);
   deaths.setDx([
     { dx: 'sVPjmX4NMFg', label: 'Recoveries' },
     { dx: 'bb6T8Nf4Ear', label: 'Total Deaths' },
@@ -182,7 +185,7 @@ export const Dashboard = observer(() => {
 
   const heathWorkers = new Visualization();
   heathWorkers.setData({ rows: [] });
-
+  heathWorkers.setD2(store.d2);
   heathWorkers.setDx([
     {
       dx: 'VGnmnm4OC47', label: 'Workers Tested'
@@ -201,6 +204,7 @@ export const Dashboard = observer(() => {
 
   const travellers = new Visualization();
   travellers.setData({ rows: [] });
+  travellers.setD2(store.d2);
   travellers.setDx([
     { dx: 'eYpIcHdIk5J', label: 'POEs Available' },
     { dx: 'yRY5bpb2sr2', label: 'POEs Activated', otherText: '%' },
@@ -216,6 +220,7 @@ export const Dashboard = observer(() => {
   travellers.setType('textValues');
 
   const positiveAtPOE = new Visualization();
+  positiveAtPOE.setD2(store.d2);
   positiveAtPOE.setDx([
     { dx: 'wAOwXzZwZhs', label: 'Travellers Tested Positive', color: '#7798BF' },
   ]);
@@ -225,6 +230,7 @@ export const Dashboard = observer(() => {
   positiveAtPOE.setFilterByPeriods(false)
 
   const positiveAtQuarantine = new Visualization();
+  positiveAtQuarantine.setD2(store.d2);
   positiveAtQuarantine.setDx([
     { dx: 'udVNN3ErO9q', label: 'Quarantined Tested Positive', color: '#7798BF' },
   ]);
@@ -234,6 +240,7 @@ export const Dashboard = observer(() => {
   positiveAtQuarantine.setFilterByPeriods(false)
 
   const caseIncidence = new Visualization();
+  caseIncidence.setD2(store.d2);
   caseIncidence.setDx([
     { dx: 'oNWIFSlbOyL', label: 'Tested Positive', type: 'column', color: '#96C5FF' },
     { dx: 'oNWIFSlbOyL', label: `7 Day's Averages`, type: 'spline', color: '#E53E3E', movingAverage: true },
@@ -245,7 +252,7 @@ export const Dashboard = observer(() => {
 
   const testingSites = new Visualization();
   testingSites.setData({ rows: [] });
-
+  testingSites.setD2(store.d2);
   testingSites.setDx([
     { dx: 'ELZwQO5nmUS', label: 'Sites Established' },
     {
@@ -262,6 +269,7 @@ export const Dashboard = observer(() => {
   testingSites.setType('textValues');
 
   const testingCapacity = new Visualization();
+  testingCapacity.setD2(store.d2);
   testingCapacity.setDx([
     { dx: 'aikFogLLKgR', label: 'Daily Testing Capacity', type: 'column', color: '#7798BF' },
     { dx: 'W6jbNXRDbEI', label: 'Tested Done Today', type: 'column', },
@@ -273,6 +281,7 @@ export const Dashboard = observer(() => {
   testingCapacity.setType('multiple');
 
   const map = new Visualization();
+  map.setD2(store.d2);
   map.setType('chart');
   map.setChartType('map');
   map.setFilterByOus(false);

@@ -1,24 +1,16 @@
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
-import accessibility from 'highcharts/modules/accessibility';
-import fullscreen from 'highcharts/modules/full-screen'
 import { observer } from "mobx-react";
 import React, { FC, useEffect } from "react";
 import { useStore } from "../../Context";
 import { TItem } from "../../models/Visualization";
 import { Spinner } from '../Spinner';
+import { Table } from "antd";
 
-
-accessibility(Highcharts);
-fullscreen(Highcharts);
 
 interface ChartProps {
   element: TItem;
 }
 
-
-
-export const Chart: FC<ChartProps> = observer(({ element }) => {
+export const Tabular: FC<ChartProps> = observer(({ element }) => {
   const store = useStore();
 
   useEffect(() => {
@@ -34,5 +26,5 @@ export const Chart: FC<ChartProps> = observer(({ element }) => {
     return <Spinner />;
   }
 
-  return <HighchartsReact highcharts={Highcharts} options={element.chart} />;
+  return <Table rowKey="key" bordered={true} scroll={{ x: element.width, y: element.height + 150 }} className="p-0 m-0" pagination={false} rowClassName={() => "bg-gray-800 text-white"} style={{ background: store.currentBackgrounds.background }} columns={element.chart.columns} dataSource={element.chart.dataSource} />;
 });
