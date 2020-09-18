@@ -12,7 +12,6 @@ interface ChartProps {
 
 export const Tabular: FC<ChartProps> = observer(({ element }) => {
   const store = useStore();
-
   useEffect(() => {
     element.setOu([store.selectedOrgUnit]);
     element.fetchFromAnalytics();
@@ -26,5 +25,5 @@ export const Tabular: FC<ChartProps> = observer(({ element }) => {
     return <Spinner />;
   }
 
-  return <Table rowKey="key" bordered={true} scroll={{ x: element.width, y: element.height + 150 }} className="p-0 m-0" pagination={false} rowClassName={() => "bg-gray-800 text-white"} style={{ background: store.currentBackgrounds.background }} columns={element.chart.columns} dataSource={element.chart.dataSource} />;
+  return <Table rowKey="ou" bordered={true} scroll={{ x: element.width, y: element.height + 150 }} className="p-0 m-0" pagination={false} rowClassName={() => "bg-gray-800 text-white"} style={{ background: store.currentBackgrounds.background }} columns={element.chart.columns} dataSource={element.chart.dataSource} />;
 });

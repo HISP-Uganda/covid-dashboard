@@ -852,11 +852,14 @@ export class Visualization {
 
         columns = this.multipleAnalysis.map((analysis: any) => {
           return analysis.dx.map((indicator: any) => {
-            const [, disagregation]: any = Object.entries(analysis.otherDimension)[0];
-            const disagg = disagregation.map((dis: any) => {
-              return dis.name
-            });
-            return disagg;
+            if (analysis.otherDimension) {
+              const [, disagregation]: any = Object.entries(analysis.otherDimension)[0];
+              const disagg = disagregation.map((dis: any) => {
+                return dis.name
+              });
+              return disagg;
+            }
+            return indicator.label
           })
         });
 
@@ -889,30 +892,45 @@ export class Visualization {
           align: 'center',
           width: 150,
           className: 'bg-gray-800',
-          render: () => <CaseList />,
+          render: (text: string, row: any, index: number) => {
+            return <CaseList ou={row.ou} />
+          },
         },]
 
         dataSource = this.data[0].metaData.dimensions.ou.map((p: string) => {
           const currentData = data[this.data[0].metaData.items[p].uid]
           const dtt = this.multipleAnalysis.map((analysis: any) => {
             return analysis.dx.map((indicator: any) => {
-              const [cat, disagregation]: any = Object.entries(analysis.otherDimension)[0];
-              const disagg = disagregation.map((dis: any) => {
+              if (analysis.otherDimension) {
+                const [cat, disagregation]: any = Object.entries(analysis.otherDimension)[0];
+                const disagg = disagregation.map((dis: any) => {
+                  if (currentData) {
+                    const dt = currentData.find((cd: any) => {
+                      return cd.dx === indicator.dx && cd[cat] === dis.dx
+                    });
+                    if (dt) {
+                      return [dis.name, Number(Number(dt.value).toFixed(0)).toLocaleString()]
+                    }
+                  }
+                  return [dis.name, 0]
+                });
+                return disagg;
+              } else {
                 if (currentData) {
                   const dt = currentData.find((cd: any) => {
-                    return cd.dx === indicator.dx && cd[cat] === dis.dx
+                    return cd.dx === indicator.dx
                   });
                   if (dt) {
-                    return [dis.name, dt.value]
+                    return [[indicator.label, Number(Number(dt.value).toFixed(0)).toLocaleString()]]
                   }
                 }
-                return [dis.name, 0]
-              });
-              return disagg;
+                return [[indicator.label, 0]]
+              }
             })
           });
-          return { ...fromPairs(flatten(flatten(dtt))), 'Treatment Center': this.data[0].metaData.items[p].name };
+          return { ...fromPairs(flatten(flatten(dtt))), 'Treatment Center': this.data[0].metaData.items[p].name, ou: p };
         });
+        console.log(dataSource);
       } else {
         // const ouIndex = this.data.headers.findIndex((h: any) => h.name === 'ou');
         // const peIndex = this.data.headers.findIndex((h: any) => h.name === 'pe');

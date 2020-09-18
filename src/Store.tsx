@@ -3,6 +3,7 @@ import { flatten } from "lodash";
 import { TDashboard, Dashboard } from "./models/Dashboard";
 import axios from "axios";
 import { BASE_URL } from "./utils/uid";
+import React from 'react';
 
 const baseUrl = BASE_URL;
 class Store {
@@ -13,11 +14,15 @@ class Store {
   @observable isLight: boolean = false;
   @observable refreshRate = 200000;
   @observable isInDhis2 = true;
+  @observable currentInstances = {
+    columns: [],
+    rows: []
+  }
+
 
   @action setD2 = async (d2: any) => (this.d2 = d2);
   @action setIsLight = (val: boolean) => this.isLight = val;
-
-
+  @action setCurrentInstances = (val: any) => this.currentInstances = val;
   @action
   loadUserOrgUnits = async () => {
     const api = this.d2.Api.getApi();
@@ -37,9 +42,6 @@ class Store {
         });
         this.userOrgUnits = organisationUnits;
       }
-
-
-
       this.selectedOrgUnit = this.userOrgUnits[0].id;
     } catch (e) {
       console.log(e);
@@ -98,6 +100,34 @@ class Store {
     dashboard.setD2(this.d2);
     this.currentDashboard = dashboard;
   };
+
+  @action loadInstances = async (ou: string) => {
+    const api = this.d2.Api.getApi();
+    const { headers, rows } = await api.get("trackedEntityInstances/query.json", {
+      ou,
+      ouMode: 'SELECTED',
+      order: 'created:desc',
+      program: 'HfsajBhUM5l',
+      programStatus: 'ACTIVE',
+      paging: "false"
+    });
+
+    const columns = headers.map((a: any, i: number) => {
+      return {
+        key: a.name,
+        title: a.column,
+        dataIndex: a.name,
+        render: (text: string, row: any) => {
+          return <div>{row[i]}</div>
+        }
+      }
+    }).filter((s: any) => ['OXW58q5OIi7', 'FZzQbW8AWVd', 'XvETY1aTxuB', 'rZH6sV93ALm'].indexOf(s.key) !== -1)
+    this.setCurrentInstances({
+      columns,
+      rows
+    })
+  };
+
 
   @computed
   get organisationUnits() {

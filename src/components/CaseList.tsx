@@ -1,21 +1,34 @@
-import { Button } from 'antd';
+import { Button, Table } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
-import React, { useState } from 'react';
+import { observer } from 'mobx-react';
+import React, { FC, useState } from 'react';
+import { useStore } from '../Context';
+import { Spinner } from './Spinner';
 
-export const CaseList = () => {
+interface CaseListProps {
+  ou: any
+}
 
-  const [visible, setVisible] = useState(false)
+export const CaseList: FC<CaseListProps> = observer(({ ou }) => {
+  const store = useStore()
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const showModal = () => {
-    setVisible(true)
+  const showModal = async () => {
+    setLoading(true);
+    setVisible(true);
+    await store.loadInstances(ou);
+    setLoading(false);
   };
 
   const handleOk = (e: any) => {
-    setVisible(false)
+    setVisible(false);
+    store.setCurrentInstances({ columns: [], rows: [] })
   };
 
   const handleCancel = (e: any) => {
     setVisible(false);
+    store.setCurrentInstances({ columns: [], rows: [] })
   };
 
   return <div>
@@ -24,13 +37,13 @@ export const CaseList = () => {
     </Button>
     <Modal
       width="80%"
-      bodyStyle={{ minHeight: '70vh', display: 'flex', alignContent: 'center', alignItems: 'center', marginLeft: '45%', fontSize: '20px' }}
+      bodyStyle={{ minHeight: '70vh', overflow: 'auto' }}
       title="Case List"
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <p>Coming soon...</p>
+      {loading ? <Spinner /> : <Table columns={store.currentInstances.columns} dataSource={store.currentInstances.rows} />}
     </Modal>
   </div>
-}
+});

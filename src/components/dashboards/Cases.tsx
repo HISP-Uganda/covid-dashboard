@@ -116,15 +116,12 @@ export const Case = observer(() => {
 
   tableData.setMultipleAnalysis([
     {
-      dx: [{ dx: 'lY3zO9cXGuB', label: 'Currently active cases' },],
-      otherDimension: {
-        'ljsvLDy69V4': [
-          { dx: 'rSKvnpvGan1', name: 'Active Ugandans' },
-          { dx: 'nzeesuOi4Dt', name: 'Active Refugee' },
-          { dx: 'G9U9xGUZnjj', name: 'Active Foreign Residents' },
-          { dx: 'cBzBlkPz6Ny', name: 'Active Foreign Non-Residents' },
-        ]
-      }
+      dx: [
+        { dx: 'J5Eh3xsW1fz', label: 'Cumulative Admissions' },
+        { dx: 'oK76O9uCtEe', label: 'Active Admissions' },
+        { dx: 'JlxdA5zFYSc', label: 'Cumulative Recoveries' },
+        { dx: 't0M20fJS6gE', label: 'Cumulative deaths' },
+      ],
     }
   ])
 
