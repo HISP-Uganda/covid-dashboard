@@ -17,7 +17,6 @@ const config = {
 };
 
 ReactDOM.render(<Loading />, document.getElementById("root"));
-
 const initialize = async () => {
   const d2 = await init(config);
   store.setD2(d2);

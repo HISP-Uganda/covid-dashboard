@@ -24,6 +24,5 @@ export const Tabular: FC<ChartProps> = observer(({ element }) => {
   if (element.loading || !element.chart) {
     return <Spinner />;
   }
-
   return <Table rowKey="ou" bordered={true} scroll={{ x: element.width, y: element.height + 150 }} className="p-0 m-0" pagination={false} rowClassName={() => "bg-gray-800 text-white"} style={{ background: store.currentBackgrounds.background }} columns={element.chart.columns} dataSource={element.chart.dataSource} />;
 });

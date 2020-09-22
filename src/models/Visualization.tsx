@@ -12,8 +12,6 @@ function average(numbers: number[]) {
   return sum(numbers) / (numbers.length || 1);
 }
 
-
-
 export class Visualization {
   @observable d2: any;
   @observable height: number = 0;
@@ -50,9 +48,11 @@ export class Visualization {
   @observable movingAverage: boolean = false;
   @observable multipleAnalysis: any[] = [];
   @observable hChart: any = undefined;
+  @observable canViewProgram :boolean = false;
 
   @action setD2 = (val: any) => this.d2 = val;
   @action setHChart = (val: any) => this.hChart = val;
+  @action setCanViewProgram = (val: any) => this.canViewProgram = val;
   @action setLoading = (val: boolean) => (this.loading = val);
   @action setDx = (dx: any[]) => (this.dx = dx);
   @action setOu = (ou: string[]) => (this.ou = ou);
@@ -886,16 +886,18 @@ export class Visualization {
           }
         });
 
-        columns = [...columns, {
-          title: 'Options',
-          key: 'action',
-          align: 'center',
-          width: 150,
-          className: 'bg-gray-800',
-          render: (text: string, row: any, index: number) => {
-            return <CaseList ou={row.ou} />
-          },
-        },]
+        if(this.canViewProgram){
+          columns = [...columns, {
+            title: 'Options',
+            key: 'action',
+            align: 'center',
+            width: 150,
+            className: 'bg-gray-800',
+            render: (text: string, row: any, index: number) => {
+              return <CaseList ou={row.ou} />
+            },
+          },]
+        }
 
         dataSource = this.data[0].metaData.dimensions.ou.map((p: string) => {
           const currentData = data[this.data[0].metaData.items[p].uid]
@@ -930,7 +932,6 @@ export class Visualization {
           });
           return { ...fromPairs(flatten(flatten(dtt))), 'Treatment Center': this.data[0].metaData.items[p].name, ou: p };
         });
-        console.log(dataSource);
       } else {
         // const ouIndex = this.data.headers.findIndex((h: any) => h.name === 'ou');
         // const peIndex = this.data.headers.findIndex((h: any) => h.name === 'pe');

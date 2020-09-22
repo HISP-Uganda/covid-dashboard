@@ -16,8 +16,6 @@ interface ChartProps {
   element: TItem;
 }
 
-
-
 export const Chart: FC<ChartProps> = observer(({ element }) => {
   const store = useStore();
 

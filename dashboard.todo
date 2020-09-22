@@ -1,0 +1,8 @@
+Dashboard:
+  ☐ Add a full case report details for the selected patient under the popup
+  ☐ Add an option for Hospital or Home if they use the same CTU tools
+  ✔ In the popup screen add a facility to search for patients using different identifiers - search option @done(20-09-22 09:02)
+  ☐ IC advised that CTU should be updating the individual data regularly and also submitting the daily report without fail.
+  ☐ With time the graph may need to be changed especially when we have many CTUs trend over time
+  ☐ The graph should group CTUs by region (Group CTUs in regions) for easy regional analysis
+  ☐ Cumulative numbers should be part of Active

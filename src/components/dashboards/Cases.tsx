@@ -130,6 +130,7 @@ export const Case = observer(() => {
   tableData.setFilterByOus(false);
   tableData.setPeriods(['THIS_YEAR']);
   tableData.setType('table');
+  tableData.setCanViewProgram(store.canSeeViewButton)
 
   const testingAndContactTracing = new Visualization();
   testingAndContactTracing.setData({ rows: [] });
