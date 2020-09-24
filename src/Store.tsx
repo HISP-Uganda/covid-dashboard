@@ -239,7 +239,7 @@ class Store {
 
   @action loadInstance = async (instance: string) => {
     const api = this.d2.Api.getApi();
-    this.currentInstance = await api.get(`trackedEntityInstances/${instance}.json`, { fields: '*' })
+    this.currentInstance = await api.get(`trackedEntityInstances/${instance}.json`, { fields: '*', program: 'HfsajBhUM5l' })
   }
 
 
@@ -301,10 +301,13 @@ class Store {
   @computed get report() {
     if (this.programDetails && this.currentInstance) {
       const { events } = this.currentInstance.enrollments[0];
-      return this.programDetails.programStages.map((programStage: any) => {
+      const { attributes } = this.currentInstance
+      const transposedEvents = this.programDetails.programStages.map((programStage: any) => {
         const stageData = groupBy(events.filter((e: any) => e.programStage === programStage.id), 'eventDate');
-        return {
-          rows: programStage.programStageDataElements.map((psde: any) => {
+        let rows: any = [];
+        let columns: any = [];
+        if (programStage.id !== 'nJL7Hwo9hzO') {
+          rows = programStage.programStageDataElements.map((psde: any) => {
             const vals = Object.entries(stageData).map((v: any) => {
               const [k, value] = v;
               let current = '';
@@ -317,8 +320,8 @@ class Store {
               return [k, current]
             });
             return { name: psde.dataElement.name, ...fromPairs(vals) }
-          }),
-          columns: [{
+          });
+          columns = [{
             key: 'name',
             title: 'Data Element',
             dataIndex: 'name'
@@ -329,10 +332,20 @@ class Store {
               dataIndex: k
             }
           })]
+        } else {
+
         }
-      })
+
+        return {
+          rows,
+          columns
+        }
+      });
+      return { transposedEvents, attributes }
     }
-    return []
+    return {
+      transposedEvents: [], attributes: []
+    }
   }
 }
 

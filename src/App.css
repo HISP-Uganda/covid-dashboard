@@ -116,15 +116,23 @@
 thead[class*="ant-table-thead"] th {
   background-color: #2d3748 !important;
   color: white !important;
-  padding:10px;
+  padding: 10px;
   font-size: large;
 }
 
-.ant-table-thead>tr.ant-table-row-hover:not(.ant-table-expanded-row)>td,
-.ant-table-tbody>tr.ant-table-row-hover:not(.ant-table-expanded-row)>td,
-.ant-table-thead>tr:hover:not(.ant-table-expanded-row)>td,
-.ant-table-tbody>tr:hover:not(.ant-table-expanded-row)>td {
-    background: unset;
+.ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td,
+.ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td,
+.ant-table-thead > tr:hover:not(.ant-table-expanded-row) > td,
+.ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+  background: unset;
 }
 
-
+.ant-descriptions-title {
+  margin-bottom: 20px;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1.5715;
+  background: gray;
+  padding: 10px;
+}
