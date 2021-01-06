@@ -19,7 +19,7 @@
     "@types/styled-components": "^5.1.0",
     "antd": "^4.2.2",
     "autoprefixer": "^9.8.4",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "babel-plugin-macros": "^2.8.0",
     "customize-cra": "^1.0.0-alpha.0",
     "d2": "^31.8.1",
